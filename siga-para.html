@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SIGA Pará · Sistema Integrado de Gestão da Agricultura Familiar</title>
+<meta name="theme-color" content="#0c2016">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+/* ============================ IDENTIDADE ============================ */
+:root{
+  --bg:#f3f1e8; --bg-soft:#eae7d9; --surface:#fffdf6; --surface-2:#f6f4ea;
+  --ink:#16241b; --ink-soft:#54655a; --line:#d8d3bf; --line-soft:#e6e2d2;
+  --g950:#0a1c12; --g900:#0c2016; --g800:#123524; --g700:#1c5d3a; --g600:#257a4a; --g500:#2f9159;
+  --amber:#d9931f; --amber-soft:#f6e8c8; --clay:#b4562c; --acai:#6d3b7a; --blue:#3b78c2;
+  --danger:#b23a2e; --ok:#1c5d3a;
+  --shadow:0 1px 2px rgba(22,36,27,.05),0 8px 24px -18px rgba(22,36,27,.25);
+  --r:11px;
+}
+[data-theme="dark"]{
+  --bg:#0c1310; --bg-soft:#111a15; --surface:#131d17; --surface-2:#182420;
+  --ink:#e9e6d9; --ink-soft:#9fb0a3; --line:#26372d; --line-soft:#1e2c24;
+  --g950:#081309; --g900:#0a1a10; --g800:#10301f; --g700:#1d6b41; --g600:#2c8f57; --g500:#43ab6c;
+  --amber:#e2ac3d; --amber-soft:#3a2f13; --clay:#d3703f; --blue:#5b93d6;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -18px rgba(0,0,0,.6);
+}
+*{scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+html{scroll-behavior:smooth}
+body{font-family:'IBM Plex Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;min-height:100vh}
+.df{font-family:'Archivo',sans-serif}
+.mono{font-family:'IBM Plex Mono',monospace}
+::selection{background:var(--amber);color:#231a04}
+a{color:var(--g600)} .small-xs{font-size:.72rem}
+.noise::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.14;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+/* ---------- linha-máscara / ken burns / ticker ---------- */
+.lr{display:block;overflow:hidden}
+.lr>span{display:block;transform:translateY(112%);animation:lrUp .9s cubic-bezier(.2,.7,.2,1) forwards}
+.lr:nth-child(2)>span{animation-delay:.12s}.lr:nth-child(3)>span{animation-delay:.24s}.lr:nth-child(4)>span{animation-delay:.36s}
+@keyframes lrUp{to{transform:translateY(0)}}
+.kb{overflow:hidden;border-radius:14px}
+.kb img{width:100%;height:100%;object-fit:cover;animation:kb 22s ease-in-out infinite alternate;display:block}
+@keyframes kb{from{transform:scale(1) translate(0,0)}to{transform:scale(1.14) translate(-2.5%,2%)}}
+.tick{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.tick-track{display:flex;gap:3rem;width:max-content;animation:tick 38s linear infinite}
+.tick:hover .tick-track{animation-play-state:paused}
+@keyframes tick{to{transform:translateX(-50%)}}
+.rise{opacity:0;transform:translateY(14px);animation:rise .6s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes rise{to{opacity:1;transform:none}}
+@keyframes popIn{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes toastIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+/* ============================ PORTAL DE ACESSO ============================ */
+#gate{min-height:100vh;display:grid;grid-template-columns:1.08fr .92fr}
+.gate-media{position:relative;background:var(--g900);color:#f1eede;padding:clamp(22px,4vw,52px);display:flex;flex-direction:column;justify-content:space-between;gap:28px;overflow:hidden}
+.gate-media::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 90% at 85% -10%,rgba(217,147,31,.22),transparent 55%),radial-gradient(90% 70% at -10% 110%,rgba(47,145,89,.28),transparent 60%);pointer-events:none}
+.gate-media>*{position:relative;z-index:1}
+.brand{display:flex;align-items:center;gap:12px}
+.brand .mark{width:46px;height:46px;flex:0 0 auto}
+.brand b{font-family:'Archivo';font-weight:800;letter-spacing:.02em;font-size:1.15rem;display:block;line-height:1}
+.brand small{color:#b9c7b3;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase}
+.gate-title{font-family:'Archivo';font-weight:900;font-size:clamp(2.3rem,4.6vw,4.3rem);line-height:.98;letter-spacing:-.02em;text-transform:uppercase}
+.gate-title em{font-style:normal;color:var(--amber)}
+.gate-sub{color:#c3cdb9;max-width:46ch;font-size:.95rem}
+.gate-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:14px;align-items:start}
+.gate-grid .kb{height:clamp(150px,22vh,240px);border:1px solid rgba(241,238,222,.18)}
+.gate-grid .kb.small{height:clamp(90px,12vh,130px)}
+.gate-grid .col{display:flex;flex-direction:column;gap:14px}
+.gstats{display:flex;gap:26px;flex-wrap:wrap;color:#c3cdb9;font-size:.8rem}
+.gstats b{display:block;font-family:'Archivo';font-weight:800;font-size:1.35rem;color:#f1eede}
+.gate-foot .tick{color:#8fa392;font-family:'IBM Plex Mono';font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;padding-top:14px;border-top:1px solid rgba(241,238,222,.14)}
+.gate-form{display:flex;align-items:center;justify-content:center;padding:clamp(24px,4vw,56px);background:
+  linear-gradient(var(--bg),var(--bg)) padding-box;background-image:radial-gradient(var(--line) 1px,transparent 1px);background-size:22px 22px}
+.gcard{width:100%;max-width:470px}
+.gcard .panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:clamp(22px,3vw,34px)}
+.kicker{font-family:'IBM Plex Mono';font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--g600);font-weight:600}
+.demo-row{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:9px 12px;cursor:pointer;background:var(--surface-2);transition:.18s;font-size:.83rem}
+.demo-row:hover{border-color:var(--g600);transform:translateY(-1px);box-shadow:var(--shadow)}
+.demo-row .dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+.demo-banner{margin:0 0 18px;padding:10px 14px;border:1px solid var(--amber);border-radius:9px;background:var(--amber-soft);color:var(--ink);font-size:.82rem}
+.demo-banner b{color:var(--danger)}
+.seal{display:inline-flex;align-items:center;gap:6px;font-size:.68rem;color:var(--ink-soft);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-family:'IBM Plex Mono'}
+/* ============================ SHELL ============================ */
+.shell{display:grid;grid-template-columns:266px 1fr;min-height:100vh}
+.side{background:var(--g900);color:#dfe6d6;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;z-index:1040}
+.side .brand{padding:20px 18px 14px}
+.tenant-chip{margin:0 14px 12px;background:var(--g800);border:1px solid rgba(241,238,222,.12);border-left:3px solid var(--amber);border-radius:9px;padding:10px 12px}
+.tenant-chip b{display:block;font-size:.85rem;color:#f5f1e0;line-height:1.2}
+.tenant-chip small{color:#9db49c;font-size:.68rem;font-family:'IBM Plex Mono';letter-spacing:.08em}
+.nav-g{padding:10px 14px 4px;font-family:'IBM Plex Mono';font-size:.62rem;letter-spacing:.24em;color:#6f8a74;text-transform:uppercase}
+.nav-it{display:flex;align-items:center;gap:11px;margin:2px 10px;padding:9px 11px;border-radius:8px;color:#b9c7b3;text-decoration:none;font-weight:500;font-size:.87rem;transition:.15s;border:1px solid transparent}
+.nav-it svg{width:17px;height:17px;flex:0 0 auto;opacity:.85}
+.nav-it:hover{color:#f0eee0;background:rgba(255,255,255,.05)}
+.nav-it.active{background:rgba(217,147,31,.13);color:#ffd98a;border-color:rgba(217,147,31,.25)}
+.nav-it.active svg{color:var(--amber)}
+.side-foot{margin-top:auto;padding:14px;border-top:1px solid rgba(241,238,222,.1)}
+.side-user{display:flex;gap:10px;align-items:center}
+.side-user small{color:#93a892;display:block;font-size:.68rem}
+.side-user b{font-size:.82rem;color:#f0eee0}
+.main{min-width:0;display:flex;flex-direction:column}
+.top{display:flex;align-items:center;gap:12px;padding:12px 24px;border-bottom:1px solid var(--line);background:var(--surface);position:sticky;top:0;z-index:1020}
+.top .crumb small{display:block;font-family:'IBM Plex Mono';font-size:.62rem;letter-spacing:.2em;color:var(--amber);text-transform:uppercase}
+.top .crumb h1{font-family:'Archivo';font-weight:800;font-size:1.18rem;margin:0;letter-spacing:-.01em;min-height:1.3em}
+.icon-btn{width:36px;height:36px;display:grid;place-items:center;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);cursor:pointer;transition:.15s;position:relative}
+.icon-btn:hover{color:var(--ink);border-color:var(--ink-soft)}
+.icon-btn svg{width:17px;height:17px}
+.badge-dot{position:absolute;top:-4px;right:-4px;background:var(--clay);color:#fff;font-size:.6rem;border-radius:999px;min-width:16px;height:16px;display:grid;place-items:center;font-weight:700}
+.sess-chip{font-family:'IBM Plex Mono';font-size:.72rem;border:1px solid var(--line);border-radius:999px;padding:5px 12px;color:var(--ink-soft);white-space:nowrap}
+.sess-chip b{color:var(--g600)}
+.content{padding:26px;width:100%;max-width:1480px;margin:0 auto;flex:1}
+.scrim{position:fixed;inset:0;background:rgba(6,14,9,.5);z-index:1035;display:none}
+@media(max-width:991px){
+  .shell{grid-template-columns:1fr}
+  .side{position:fixed;left:0;top:0;width:276px;transform:translateX(-104%);transition:transform .3s cubic-bezier(.2,.7,.2,1)}
+  .side.open{transform:none}
+  .scrim.on{display:block}
+  #gate{grid-template-columns:1fr}
+  .gate-media{min-height:auto}
+}
+/* ============================ COMPONENTES ============================ */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.panel-h{padding:14px 18px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap}
+.panel-h h5{margin:0;font-family:'Archivo';font-weight:700;font-size:.98rem}
+.panel-b{padding:18px}
+.vh{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:18px;flex-wrap:wrap}
+.vh h2{font-family:'Archivo';font-weight:800;font-size:1.5rem;margin:0;letter-spacing:-.01em}
+.vh .idx{font-family:'IBM Plex Mono';font-size:.68rem;letter-spacing:.22em;color:var(--amber);text-transform:uppercase;display:block;margin-bottom:4px}
+.btn{border-radius:9px;font-weight:600;font-size:.85rem;padding:.52rem 1rem;transition:.15s}
+.btn svg{width:15px;height:15px;margin-top:-2px}
+.btn-p{background:var(--g700);border:1px solid var(--g700);color:#f3f1e4}
+.btn-p:hover{background:var(--g800);border-color:var(--g800);color:#fff;transform:translateY(-1px)}
+.btn-amber{background:var(--amber);border:1px solid var(--amber);color:#241a04}
+.btn-amber:hover{filter:brightness(1.06);color:#241a04;transform:translateY(-1px)}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--ink-soft);background:var(--surface-2)}
+.btn-danger-soft{background:transparent;border:1px solid color-mix(in srgb,var(--danger) 40%,transparent);color:var(--danger)}
+.btn-danger-soft:hover{background:var(--danger);border-color:var(--danger);color:#fff}
+.btn-sm-x{padding:.3rem .7rem;font-size:.76rem}
+.form-control,.form-select{background:var(--surface);border:1px solid var(--line);color:var(--ink);border-radius:9px;font-size:.87rem}
+.form-control:focus,.form-select:focus{background:var(--surface);color:var(--ink);border-color:var(--g600);box-shadow:0 0 0 3px color-mix(in srgb,var(--g600) 18%,transparent)}
+.form-label{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);margin-bottom:4px}
+fieldset legend{font-family:'Archivo';font-weight:700;font-size:.85rem;color:var(--g600);border-bottom:1px dashed var(--line);padding-bottom:6px;margin-bottom:12px}
+.tbl-wrap{overflow:auto;border-radius:0 0 var(--r) var(--r)}
+.tbl{width:100%;border-collapse:separate;border-spacing:0;font-size:.86rem}
+.tbl th{font-family:'IBM Plex Mono';font-size:.63rem;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-soft);text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--surface-2);position:sticky;top:0;z-index:2;white-space:nowrap}
+.tbl td{padding:11px 14px;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+.tbl tbody tr{transition:background .12s}
+.tbl tbody tr:hover td{background:var(--surface-2)}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font-size:.71rem;font-weight:600;border:1px solid;white-space:nowrap}
+.chip i{width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block}
+.st-Agendado{color:var(--blue);border-color:color-mix(in srgb,var(--blue) 35%,transparent);background:color-mix(in srgb,var(--blue) 10%,transparent)}
+.st-Confirmado{color:var(--g600);border-color:color-mix(in srgb,var(--g600) 35%,transparent);background:color-mix(in srgb,var(--g600) 10%,transparent)}
+.st-EmAtendimento{color:var(--amber);border-color:color-mix(in srgb,var(--amber) 45%,transparent);background:color-mix(in srgb,var(--amber) 12%,transparent)}
+.st-Concluido{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 35%,transparent);background:color-mix(in srgb,var(--ok) 12%,transparent)}
+.st-Cancelado{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 35%,transparent);background:color-mix(in srgb,var(--danger) 10%,transparent)}
+.st-NaoCompareceu{color:#8a8577;border-color:#b9b4a3;background:color-mix(in srgb,#8a8577 10%,transparent)}
+.role-super{color:var(--acai);border-color:color-mix(in srgb,var(--acai) 40%,transparent);background:color-mix(in srgb,var(--acai) 10%,transparent)}
+.role-admin{color:var(--clay);border-color:color-mix(in srgb,var(--clay) 40%,transparent);background:color-mix(in srgb,var(--clay) 10%,transparent)}
+.role-user{color:var(--blue);border-color:color-mix(in srgb,var(--blue) 40%,transparent);background:color-mix(in srgb,var(--blue) 10%,transparent)}
+.act-btn{width:30px;height:30px;display:inline-grid;place-items:center;border-radius:7px;border:1px solid var(--line);background:transparent;color:var(--ink-soft);transition:.14s}
+.act-btn svg{width:14px;height:14px}
+.act-btn:hover{color:var(--ink);border-color:var(--ink-soft);transform:translateY(-1px)}
+.act-btn.danger:hover{color:#fff;background:var(--danger);border-color:var(--danger)}
+.avatar{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;font-family:'Archivo';font-weight:800;font-size:.85rem;color:#fff;background:var(--g600);flex:0 0 auto}
+.avatar.lg{width:56px;height:56px;font-size:1.2rem;border-radius:14px}
+/* KPIs */
+.kpi{display:flex;gap:14px;align-items:flex-start}
+.kpi .ico{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;flex:0 0 auto}
+.kpi .ico svg{width:19px;height:19px}
+.kpi .num{font-family:'Archivo';font-weight:800;font-size:1.9rem;line-height:1.05;letter-spacing:-.02em}
+.kpi .lbl{font-size:.72rem;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+.kpi .delta{font-size:.7rem;font-weight:600}
+.delta.up{color:var(--g600)} .delta.dn{color:var(--danger)}
+/* Calendário */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.cal-h{background:var(--surface-2);padding:8px;text-align:center;font-family:'IBM Plex Mono';font-size:.63rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
+.cal-cell{background:var(--surface);min-height:118px;padding:6px;transition:background .15s;cursor:pointer}
+.cal-cell.dim{background:var(--surface-2)} .cal-cell.dim .dnum{opacity:.4}
+.cal-cell .dnum{font-family:'IBM Plex Mono';font-size:.72rem;width:24px;height:24px;display:grid;place-items:center;border-radius:7px;color:var(--ink-soft)}
+.cal-cell.today .dnum{background:var(--amber);color:#241a04;font-weight:700}
+.cal-cell.drag-over{background:var(--amber-soft);outline:2px dashed var(--amber);outline-offset:-4px}
+.evt{font-size:.66rem;line-height:1.25;padding:3px 6px;border-radius:6px;border-left:3px solid;margin-top:4px;background:var(--surface-2);cursor:grab;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.evt:active{cursor:grabbing}
+.evt b{font-weight:600}
+.evt.st-Agendado{border-color:var(--blue)} .evt.st-Confirmado{border-color:var(--g600)}
+.evt.st-EmAtendimento{border-color:var(--amber)} .evt.st-Concluido{border-color:var(--ok);opacity:.75}
+.evt.st-Cancelado{border-color:var(--danger);opacity:.6;text-decoration:line-through} .evt.st-NaoCompareceu{border-color:#8a8577;opacity:.7}
+.cal-more{font-size:.62rem;color:var(--ink-soft);font-family:'IBM Plex Mono';margin-top:3px}
+/* rank bars */
+.rk{margin-bottom:12px}
+.rk .t{display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:4px}
+.rk .t b{font-weight:600}
+.rk .bar{height:8px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line-soft);overflow:hidden}
+.rk .bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--g600),var(--amber));width:0;transition:width 1s cubic-bezier(.2,.7,.2,1)}
+/* feed */
+.feed-it{display:flex;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line-soft);font-size:.82rem}
+.feed-it:last-child{border:none}
+.feed-it .dot{width:8px;height:8px;border-radius:50%;margin-top:6px;flex:0 0 auto}
+.feed-it small{color:var(--ink-soft);font-family:'IBM Plex Mono';font-size:.66rem}
+/* dropdown/busca */
+.gsearch{position:relative;flex:1;max-width:340px}
+.gsearch .results{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);z-index:1050;overflow:hidden;display:none}
+.gsearch .results.on{display:block;animation:popIn .18s ease}
+.gsearch .ri{padding:9px 14px;font-size:.82rem;cursor:pointer;display:flex;gap:10px;align-items:center;border-bottom:1px solid var(--line-soft)}
+.gsearch .ri:hover{background:var(--surface-2)}
+.dropdown-menu{background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:12px;font-size:.85rem}
+.dropdown-item{color:var(--ink);padding:8px 14px}
+.dropdown-item:hover{background:var(--surface-2);color:var(--ink)}
+.notif-it{padding:10px 14px;border-bottom:1px solid var(--line-soft);width:320px;white-space:normal}
+.notif-it b{font-size:.82rem}
+.notif-it p{margin:2px 0 0;font-size:.78rem;color:var(--ink-soft)}
+.notif-it.unread{background:color-mix(in srgb,var(--amber) 7%,transparent)}
+/* modais */
+.modal-content{background:var(--surface);border:1px solid var(--line);border-radius:14px;color:var(--ink)}
+.modal-header,.modal-footer{border-color:var(--line-soft)}
+.modal-title{font-family:'Archivo';font-weight:700}
+.btn-close{filter:invert(.4)} [data-theme="dark"] .btn-close{filter:invert(.7)}
+.offcanvas{background:var(--surface);color:var(--ink);border-left:1px solid var(--line)}
+.pcell{padding:10px 14px;border-bottom:1px solid var(--line-soft);font-size:.83rem}
+.pcell b{font-size:.78rem}
+.fld{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px dashed var(--line-soft);font-size:.84rem}
+.fld span{color:var(--ink-soft);flex:0 0 42%}
+/* toasts */
+#toasts{position:fixed;right:18px;bottom:18px;z-index:2000;display:flex;flex-direction:column;gap:10px}
+.toastx{background:var(--g900);color:#eef0e2;border:1px solid rgba(241,238,222,.15);border-left:4px solid var(--amber);border-radius:10px;padding:12px 16px;min-width:280px;max-width:380px;box-shadow:var(--shadow);animation:toastIn .3s cubic-bezier(.2,.7,.2,1);font-size:.84rem}
+.toastx.ok{border-left-color:var(--g500)} .toastx.err{border-left-color:var(--danger)}
+.toastx b{display:block;font-family:'Archivo';font-size:.8rem;margin-bottom:2px}
+/* planos */
+.plan{position:relative;overflow:hidden}
+.plan .p-val{font-family:'Archivo';font-weight:900;font-size:2rem}
+.plan.hot{border-color:var(--amber);box-shadow:0 0 0 3px color-mix(in srgb,var(--amber) 20%,transparent)}
+.plan ul{list-style:none;padding:0;margin:0;font-size:.83rem}
+.plan li{padding:6px 0;border-bottom:1px dashed var(--line-soft);display:flex;gap:8px}
+.plan li svg{width:15px;height:15px;color:var(--g600);flex:0 0 auto;margin-top:2px}
+.flag{font-family:'IBM Plex Mono';font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;background:var(--amber);color:#241a04;padding:3px 10px;border-radius:99px;font-weight:600}
+.storage .bar{height:7px;background:var(--surface-2);border:1px solid var(--line-soft);border-radius:99px;overflow:hidden;min-width:90px}
+.storage .bar i{display:block;height:100%;background:var(--g600);border-radius:99px}
+/* tabs relatórios */
+.rep-card{transition:.18s}
+.rep-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--surface-2)}
+.seg button{border:none;background:transparent;padding:6px 14px;font-size:.78rem;font-weight:600;color:var(--ink-soft);cursor:pointer}
+.seg button.on{background:var(--g700);color:#f0eee0}
+.perm-h{font-family:'IBM Plex Mono';font-size:.63rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+/* print */
+#printArea{display:none}
+@media print{
+  body>*{display:none!important}
+  #printArea{display:block!important;font-family:'IBM Plex Sans';color:#111}
+  #printArea h1{font-family:'Archivo';font-size:20px;margin:0}
+  #printArea table{width:100%;border-collapse:collapse;font-size:11px;margin-top:14px}
+  #printArea th,#printArea td{border:1px solid #bbb;padding:6px 8px;text-align:left}
+  #printArea th{background:#eee;font-family:'IBM Plex Mono';text-transform:uppercase;font-size:9px;letter-spacing:.08em}
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .lr>span{transform:none}
+  .tick-track{animation:none;flex-wrap:wrap;width:auto}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+<!-- ======================= BIBLIOTECA DE ÍCONES ======================= -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+<symbol id="i-logo" viewBox="0 0 48 48"><circle cx="24" cy="24" r="23" fill="#0c2016" stroke="#d9931f" stroke-width="1.5"/><path d="M24 36V20" stroke="#e9e6d9" stroke-width="2.4" stroke-linecap="round"/><path d="M24 26c-1-6-6-9-12-9 1 6 6 9 12 9z" fill="#2f9159"/><path d="M24 21c1-5.5 5.5-8 11-8-1 5.5-5.5 8-11 8z" fill="#43ab6c"/><path d="M13 38h22" stroke="#d9931f" stroke-width="2.4" stroke-linecap="round"/></symbol>
+<symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="5" rx="1.5"/><rect x="13" y="10" width="8" height="11" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+<symbol id="i-ticket" viewBox="0 0 24 24"><path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4V7z"/><path d="M13 7v2m0 3v2m0 3v1" stroke-dasharray="0 0"/></symbol>
+<symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5 19c0-8 4-13 14-14-1 10-6 14-14 14z"/><path d="M5 19c3-5 7-8 10-9"/></symbol>
+<symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 3h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V9M10 20V4M16 20v-8M21 20H3"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.2 7.7-8 9-4.8-1.3-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></symbol>
+<symbol id="i-scroll" viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6M9 16h4"/></symbol>
+<symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M4.6 5.6l2.1 2.1M17.3 18.3l2.1 2.1M2.5 12h3M18.5 12h3M4.6 18.4l2.1-2.1M17.3 5.7l2.1-2.1"/></symbol>
+<symbol id="i-build" viewBox="0 0 24 24"><path d="M3 21h18M5 21V8l7-5 7 5v13"/><path d="M9 21v-5h6v5M9 11h.01M15 11h.01M12 11h.01"/></symbol>
+<symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5M3 17l9 5 9-5" opacity=".6"/></symbol>
+<symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14 0 18-3-4-3-14.5 0-18z"/></symbol>
+<symbol id="i-server" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="7" rx="1.5"/><rect x="3" y="13" width="18" height="7" rx="1.5"/><path d="M7 7.5h.01M7 16.5h.01M11 7.5h3M11 16.5h3"/></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 19a2 2 0 0 0 4 0"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 13.5A8.5 8.5 0 1 1 10.5 4 6.6 6.6 0 0 0 20 13.5z"/></symbol>
+<symbol id="i-out" viewBox="0 0 24 24"><path d="M14 4h5v16h-5M10 8l-4 4 4 4M6 12h11"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v11M7 11l5 5 5-5M4 20h16"/></symbol>
+<symbol id="i-print" viewBox="0 0 24 24"><path d="M7 8V3h10v5M5 8h14v8h-3M8 13h8v8H8v-8z"/></symbol>
+<symbol id="i-pen" viewBox="0 0 24 24"><path d="M4 20l1-4L16.5 4.5a2.1 2.1 0 0 1 3 3L8 19l-4 1z"/></symbol>
+<symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+<symbol id="i-truck" viewBox="0 0 24 24"><path d="M2 6h12v10H2zM14 9h4l4 3v4h-8"/><circle cx="6" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></symbol>
+<symbol id="i-file" viewBox="0 0 24 24"><path d="M6 2h8l5 5v15H6V2z"/><path d="M14 2v5h5"/></symbol>
+<symbol id="i-rest" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></symbol>
+<symbol id="i-wa" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.6-1.2A9 9 0 1 0 12 3z"/><path d="M9 8.5c-.5 3 3 6.5 6.5 6l.4-1.8-2.2-1-.9.9c-1-.5-1.9-1.4-2.3-2.4l.9-.8-1-2.3-1.4.4z" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></symbol>
+</defs>
+</svg>
+
+<!-- ======================= PORTAL DE ACESSO ======================= -->
+<div id="gate">
+  <div class="gate-media noise">
+    <div class="brand">
+      <svg class="mark"><use href="#i-logo"/></svg>
+      <div><b>SIGA · PARÁ</b><small>Sistema Integrado de Gestão Agrícola</small></div>
+    </div>
+    <div>
+      <h1 class="gate-title">
+        <span class="lr"><span>A porta de</span></span>
+        <span class="lr"><span>entrada da</span></span>
+        <span class="lr"><span><em>agricultura</em></span></span>
+        <span class="lr"><span><em>familiar</em> paraense.</span></span>
+      </h1>
+      <p class="gate-sub mt-3">Agendamentos, CAF, assistência técnica e regularização fundiária — uma única plataforma multitenant para as Secretarias Municipais de Agricultura do Estado do Pará.</p>
+      <div class="gate-grid mt-4">
+        <div class="kb"><img src="https://picsum.photos/seed/agricultura-familiar-para/900/620" alt="Agricultura familiar no Pará"></div>
+        <div class="col">
+          <div class="kb small"><img src="https://picsum.photos/seed/mandioca-amazonia/420/300" alt="Produção de mandioca"></div>
+          <div class="kb small"><img src="https://picsum.photos/seed/rio-guama-bujaru/420/300" alt="Comunidade ribeirinha"></div>
+        </div>
+      </div>
+    </div>
+    <div class="gate-foot">
+      <div class="gstats mb-3" id="gateStats"></div>
+      <div class="tick"><div class="tick-track" id="tickTrack"></div></div>
+    </div>
+  </div>
+  <div class="gate-form">
+    <div class="gcard">
+      <div class="panel">
+        <!-- LOGIN -->
+        <div id="paneLogin">
+          <span class="kicker">Acesso restrito · v2.4.1</span>
+          <h2 class="df mt-1 mb-1" style="font-weight:800;font-size:1.55rem">Acessar a plataforma</h2>
+          <p class="text-muted small mb-3" style="color:var(--ink-soft)!important">Protótipo navegável para demonstração.</p>
+          <div class="alert alert-warning small py-2" role="alert">Modo demonstração: login e permissões são simulados; senhas e cadastros ficam sem criptografia neste navegador. Não insira dados pessoais nem use para operação oficial.</div>
+          <div id="gErr" class="alert alert-danger py-2 small" style="display:none"></div>
+          <form id="gForm" autocomplete="off">
+            <div class="mb-3"><label class="form-label">E-mail institucional</label>
+              <input type="email" class="form-control" id="gEmail" placeholder="nome@municipio.pa.gov.br" required></div>
+            <div class="mb-3"><label class="form-label">Senha</label>
+              <input type="password" class="form-control" id="gPass" placeholder="••••••••" required></div>
+            <button class="btn btn-p w-100 mb-2" type="submit">Entrar no sistema</button>
+            <button type="button" class="btn btn-link text-decoration-none p-0 small" onclick="gatePane('fp1')">Esqueci minha senha</button>
+          </form>
+          <hr class="my-4" style="border-color:var(--line)">
+          <p class="small-xs mono" style="letter-spacing:.16em;color:var(--ink-soft)">CONTAS DE DEMONSTRAÇÃO</p>
+          <div class="d-flex flex-column gap-2 mt-2">
+            <div class="demo-row" onclick="fillLogin('superadmin@siga.pa.gov.br','siga2026')"><span class="dot" style="background:var(--acai)"></span><span><b>Super Admin</b> — Plataforma estadual</span><span class="ms-auto mono small-xs">→</span></div>
+            <div class="demo-row" onclick="fillLogin('admin@concordia.pa.gov.br','admin123')"><span class="dot" style="background:var(--clay)"></span><span><b>Administrador</b> — Concórdia do Pará</span><span class="ms-auto mono small-xs">→</span></div>
+            <div class="demo-row" onclick="fillLogin('servidor@concordia.pa.gov.br','servidor')"><span class="dot" style="background:var(--blue)"></span><span><b>Usuário comum</b> — Concórdia do Pará</span><span class="ms-auto mono small-xs">→</span></div>
+            <div class="demo-row" onclick="fillLogin('admin@bujaru.pa.gov.br','admin123')"><span class="dot" style="background:var(--g600)"></span><span><b>Administrador</b> — Bujaru (outro tenant)</span><span class="ms-auto mono small-xs">→</span></div>
+          </div>
+        </div>
+        <!-- RECUPERAÇÃO: ETAPA 1 -->
+        <div id="paneFp1" style="display:none">
+          <span class="kicker">Recuperação de senha · 1/3</span>
+          <h2 class="df mt-1 mb-3" style="font-weight:800;font-size:1.35rem">Esqueci minha senha</h2>
+          <p class="small" style="color:var(--ink-soft)">Na demonstração, nenhum e-mail é enviado. Um código fictício será exibido na próxima etapa.</p>
+          <div class="mb-3"><label class="form-label">E-mail</label><input type="email" class="form-control" id="fpEmail" placeholder="nome@municipio.pa.gov.br"></div>
+          <button class="btn btn-p w-100" onclick="fpSend()">Gerar código de demonstração</button>
+          <button class="btn btn-link w-100 mt-2 text-decoration-none small" onclick="gatePane('paneLogin')">← Voltar ao login</button>
+        </div>
+        <!-- ETAPA 2 -->
+        <div id="paneFp2" style="display:none">
+          <span class="kicker">Recuperação de senha · 2/3</span>
+          <h2 class="df mt-1 mb-3" style="font-weight:800;font-size:1.35rem">Código de demonstração</h2>
+          <div class="panel p-3 mb-3" style="background:var(--surface-2);box-shadow:none">
+            <div class="d-flex gap-2 align-items-center mb-2"><svg style="width:16px;height:16px;color:var(--g600)"><use href="#i-mail"/></svg><b class="small">Recuperação de Senha</b><span class="ms-auto mono small-xs" style="color:var(--ink-soft)">agora</span></div>
+            <p class="small mb-2" style="color:var(--ink-soft)">Esta mensagem é ilustrativa. Nenhuma solicitação foi enviada por e-mail nem identidade foi verificada.</p>
+            <span class="mono small-xs" style="color:var(--ink-soft)">Código fictício: <span id="fpTokenLbl"></span></span>
+          </div>
+          <button class="btn btn-amber w-100" onclick="gatePane('paneFp3')">Continuar demonstração →</button>
+          <button class="btn btn-link w-100 mt-2 text-decoration-none small" onclick="gatePane('paneLogin')">← Voltar ao login</button>
+        </div>
+        <!-- ETAPA 3 -->
+        <div id="paneFp3" style="display:none">
+          <span class="kicker">Recuperação de senha · 3/3</span>
+          <h2 class="df mt-1 mb-3" style="font-weight:800;font-size:1.35rem">Definir nova senha</h2>
+          <div class="mb-3"><label class="form-label">Nova senha</label><input type="password" class="form-control" id="fpPass" placeholder="Mínimo 8 caracteres"></div>
+          <div class="mb-3"><label class="form-label">Confirmar senha</label><input type="password" class="form-control" id="fpPass2"></div>
+          <button class="btn btn-p w-100" onclick="fpDone()">Redefinir senha</button>
+          <button class="btn btn-link w-100 mt-2 text-decoration-none small" onclick="gatePane('paneLogin')">← Cancelar</button>
+        </div>
+      </div>
+      <div class="d-flex gap-2 justify-content-center mt-3 flex-wrap">
+        <span class="seal">MODO DEMONSTRAÇÃO</span><span class="seal">DADOS LOCAIS</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= APLICAÇÃO ======================= -->
+<div id="app" class="shell" style="display:none">
+  <div class="scrim" id="scrim" onclick="toggleSide(false)"></div>
+  <aside class="side noise" id="side">
+    <div class="brand"><svg class="mark" style="width:40px;height:40px"><use href="#i-logo"/></svg>
+      <div><b>SIGA · PARÁ</b><small>Gestão agrícola</small></div></div>
+    <div class="tenant-chip" id="tenantChip"></div>
+    <nav id="sideNav" class="flex-grow-1 pb-3"></nav>
+    <div class="side-foot">
+      <div class="side-user">
+        <div class="avatar" id="suAvatar">–</div>
+        <div class="flex-grow-1" style="min-width:0"><b id="suName" class="text-truncate d-block">–</b><small id="suRole">–</small></div>
+        <button class="icon-btn" style="border-color:rgba(241,238,222,.2);color:#b9c7b3;background:transparent" title="Sair" onclick="doLogout()"><svg><use href="#i-out"/></svg></button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="top">
+      <button class="icon-btn d-lg-none" onclick="toggleSide(true)"><svg style="width:18px;height:18px"><use href="#i-grid"/></svg></button>
+      <div class="crumb flex-grow-1" style="min-width:0"><small id="modIdx">MÓDULO</small><h1 id="modTitle" class="text-truncate">Painel</h1></div>
+      <div class="gsearch d-none d-md-block">
+        <input class="form-control form-control-sm" id="gSearch" placeholder="Buscar agricultor, agendamento…" autocomplete="off">
+        <div class="results" id="gResults"></div>
+      </div>
+      <span class="sess-chip d-none d-md-inline" title="Expiração automática por inatividade"><svg style="width:12px;height:12px;vertical-align:-1px"><use href="#i-clock"/></svg> <b id="sessTime">30:00</b></span>
+      <button class="icon-btn" id="themeBtn" title="Alternar tema" onclick="toggleTheme()"><svg id="themeIco"><use href="#i-moon"/></svg></button>
+      <div class="dropdown">
+        <button class="icon-btn" data-bs-toggle="dropdown" id="bellBtn"><svg><use href="#i-bell"/></svg><span class="badge-dot" id="bellBadge" style="display:none">0</span></button>
+        <div class="dropdown-menu dropdown-menu-end p-0" id="bellList" style="width:340px"></div>
+      </div>
+      <div class="dropdown">
+        <button class="btn btn-ghost btn-sm-x dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+          <span class="avatar" id="topAvatar" style="width:26px;height:26px;font-size:.65rem;border-radius:7px">–</span><span class="d-none d-sm-inline" id="topName">–</span>
+        </button>
+        <div class="dropdown-menu dropdown-menu-end">
+          <div class="px-3 py-2 border-bottom" style="border-color:var(--line-soft)!important"><b class="small d-block" id="ddName">–</b><span class="small-xs" style="color:var(--ink-soft)" id="ddMail">–</span></div>
+          <button class="dropdown-item" onclick="toggleTheme()">Alternar tema claro/escuro</button>
+          <button class="dropdown-item text-danger" onclick="doLogout()">Sair da plataforma</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="demo-banner" role="status"><b>Modo demonstração</b> — autenticação e permissões simuladas; dados armazenados apenas neste navegador. Não use dados reais.</div>
+      <!-- ============ PAINEL ============ -->
+      <section class="view" id="view-dashboard">
+        <div class="vh"><div><span class="idx">01 · Visão geral</span><h2 id="dashHello">Bom dia</h2>
+          <p class="mb-0 small" style="color:var(--ink-soft)" id="dashDate"></p></div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-ghost btn-sm-x" onclick="showView('calendario')"><svg><use href="#i-cal"/></svg> Calendário</button>
+            <button class="btn btn-p btn-sm-x" onclick="openAgdModal()"><svg><use href="#i-plus"/></svg> Novo agendamento</button>
+          </div></div>
+        <div class="row g-3" id="kpiRow"></div>
+        <div class="row g-3 mt-1">
+          <div class="col-lg-8"><div class="panel h-100"><div class="panel-h"><h5>Evolução de agendamentos · últimos 6 meses</h5><span class="mono small-xs" style="color:var(--ink-soft)" id="lineTot"></span></div>
+            <div class="panel-b" style="height:280px"><canvas id="chLine"></canvas></div></div></div>
+          <div class="col-lg-4"><div class="panel h-100"><div class="panel-h"><h5>Serviços mais procurados</h5></div>
+            <div class="panel-b" style="height:280px"><canvas id="chBar"></canvas></div></div></div>
+        </div>
+        <div class="row g-3 mt-1">
+          <div class="col-lg-4"><div class="panel h-100"><div class="panel-h"><h5>Situação do mês</h5></div>
+            <div class="panel-b" style="height:230px"><canvas id="chDonut"></canvas></div></div></div>
+          <div class="col-lg-4"><div class="panel h-100"><div class="panel-h"><h5>Comunidades mais atendidas</h5></div><div class="panel-b" id="rankCom"></div></div></div>
+          <div class="col-lg-4"><div class="panel h-100"><div class="panel-h"><h5>Atividade recente</h5><span class="chip st-Confirmado"><i></i>Auditoria</span></div>
+            <div class="panel-b pt-2" id="actFeed" style="max-height:260px;overflow:auto"></div></div></div>
+        </div>
+        <div class="row g-3 mt-1">
+          <div class="col-12"><div class="panel"><div class="panel-h"><h5>Próximos atendimentos</h5>
+            <button class="btn btn-ghost btn-sm-x" onclick="showView('agendamentos')">Ver todos →</button></div>
+            <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Nº</th><th>Data</th><th>Hora</th><th>Agricultor(a)</th><th>Serviço</th><th>Técnico(a)</th><th>Status</th></tr></thead><tbody id="upList"></tbody></table></div></div></div>
+        </div>
+      </section>
+
+      <!-- ============ CALENDÁRIO ============ -->
+      <section class="view" id="view-calendario">
+        <div class="vh"><div><span class="idx">02 · Agenda</span><h2>Calendário de atendimentos</h2>
+          <p class="mb-0 small" style="color:var(--ink-soft)" id="calCount"></p></div>
+          <div class="d-flex gap-2 flex-wrap align-items-center">
+            <div class="seg"><button id="segM" class="on" onclick="setCalView('month')">Mês</button><button id="segW" onclick="setCalView('week')">Semana</button></div>
+            <select class="form-select form-select-sm" style="width:auto" id="calFTec" onchange="renderCalendar()"><option value="">Todos os técnicos</option></select>
+            <select class="form-select form-select-sm" style="width:auto" id="calFServ" onchange="renderCalendar()"><option value="">Todos os serviços</option></select>
+            <button class="btn btn-ghost btn-sm-x" onclick="calToday()">Hoje</button>
+            <button class="btn btn-p btn-sm-x" onclick="openAgdModal()"><svg><use href="#i-plus"/></svg> Agendar</button>
+          </div></div>
+        <div class="panel">
+          <div class="panel-h">
+            <div class="d-flex align-items-center gap-2">
+              <button class="icon-btn" onclick="calMove(-1)">‹</button><h5 id="calLabel" class="mx-2 text-capitalize" style="min-width:180px;text-align:center"></h5><button class="icon-btn" onclick="calMove(1)">›</button>
+            </div>
+            <div class="d-flex gap-2 flex-wrap small-xs mono" id="calLegend" style="color:var(--ink-soft)"></div>
+          </div>
+          <div class="panel-b"><div class="cal-grid" id="calGrid"></div>
+          <p class="small-xs mt-2 mb-0" style="color:var(--ink-soft)">💡 Arraste um atendimento para outro dia para reagendar · clique em um dia vazio para criar.</p></div>
+        </div>
+      </section>
+
+      <!-- ============ AGENDAMENTOS ============ -->
+      <section class="view" id="view-agendamentos">
+        <div class="vh"><div><span class="idx">03 · Operações</span><h2>Agendamentos</h2>
+          <p class="mb-0 small" style="color:var(--ink-soft)" id="agdCount"></p></div>
+          <div class="d-flex gap-2 flex-wrap">
+            <button class="btn btn-ghost btn-sm-x" onclick="exportAgdCSV()"><svg><use href="#i-down"/></svg> Excel</button>
+            <button class="btn btn-ghost btn-sm-x" onclick="showView('calendario')"><svg><use href="#i-cal"/></svg> Calendário</button>
+            <button class="btn btn-p btn-sm-x" onclick="openAgdModal()"><svg><use href="#i-plus"/></svg> Novo agendamento</button>
+          </div></div>
+        <div class="panel">
+          <div class="panel-h">
+            <div class="d-flex gap-2 flex-wrap flex-grow-1">
+              <div class="position-relative flex-grow-1" style="max-width:240px"><input class="form-control form-control-sm" id="fAq" placeholder="Buscar por agricultor ou nº…" oninput="S.f.agd.q=this.value;pg.agd=1;renderAgendamentos()"></div>
+              <select class="form-select form-select-sm" style="width:auto" id="fAStatus" onchange="S.f.agd.st=this.value;pg.agd=1;renderAgendamentos()"><option value="">Status: todos</option></select>
+              <select class="form-select form-select-sm" style="width:auto" id="fAServ" onchange="S.f.agd.sv=this.value;pg.agd=1;renderAgendamentos()"><option value="">Serviço: todos</option></select>
+              <select class="form-select form-select-sm" style="width:auto" id="fATec" onchange="S.f.agd.tc=this.value;pg.agd=1;renderAgendamentos()"><option value="">Técnico: todos</option></select>
+            </div>
+          </div>
+          <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Nº</th><th>Data</th><th>Hora</th><th>Agricultor(a)</th><th>Serviço</th><th>Técnico(a)</th><th>Status</th><th style="width:120px">Ações</th></tr></thead><tbody id="agdTbody"></tbody></table></div>
+          <div class="panel-h" style="border-top:1px solid var(--line-soft);border-bottom:none"><span class="small" style="color:var(--ink-soft)" id="agdPagInfo"></span>
+            <div class="d-flex gap-2"><button class="btn btn-ghost btn-sm-x" onclick="agdPg(-1)">‹ Anterior</button><button class="btn btn-ghost btn-sm-x" onclick="agdPg(1)">Próxima ›</button></div></div>
+        </div>
+      </section>
+
+      <!-- ============ AGRICULTORES ============ -->
+      <section class="view" id="view-agricultores">
+        <div class="vh"><div><span class="idx">04 · Cadastro rural</span><h2>Agricultores familiares</h2>
+          <p class="mb-0 small" style="color:var(--ink-soft)" id="agriCount"></p></div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-ghost btn-sm-x" onclick="exportAgriCSV()"><svg><use href="#i-down"/></svg> Excel</button>
+            <button class="btn btn-p btn-sm-x" onclick="openAgriModal()"><svg><use href="#i-plus"/></svg> Novo agricultor</button>
+          </div></div>
+        <div class="panel">
+          <div class="panel-h"><div class="d-flex gap-2 flex-wrap flex-grow-1">
+            <input class="form-control form-select-sm form-control-sm" style="max-width:260px" id="fRq" placeholder="Buscar por nome ou CPF…" oninput="S.f.agri.q=this.value;pg.agri=1;renderAgricultores()">
+            <select class="form-select form-select-sm" style="width:auto" id="fRcom" onchange="S.f.agri.com=this.value;pg.agri=1;renderAgricultores()"><option value="">Comunidade: todas</option></select>
+          </div></div>
+          <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Agricultor(a)</th><th>CPF</th><th>Comunidade</th><th>Cultura principal</th><th>Contato</th><th>DAP/CAF</th><th style="width:120px">Ações</th></tr></thead><tbody id="agriTbody"></tbody></table></div>
+          <div class="panel-h" style="border-top:1px solid var(--line-soft);border-bottom:none"><span class="small" style="color:var(--ink-soft)" id="agriPagInfo"></span>
+            <div class="d-flex gap-2"><button class="btn btn-ghost btn-sm-x" onclick="agriPg(-1)">‹ Anterior</button><button class="btn btn-ghost btn-sm-x" onclick="agriPg(1)">Próxima ›</button></div></div>
+        </div>
+      </section>
+
+      <!-- ============ CADASTROS ============ -->
+      <section class="view" id="view-cadastros">
+        <div class="vh"><div><span class="idx">05 · Base operacional</span><h2>Cadastros auxiliares</h2>
+          <p class="mb-0 small" style="color:var(--ink-soft)">Técnicos, comunidades, associações, cooperativas e frota municipal.</p></div></div>
+        <div class="seg mb-3"><button class="on" onclick="cadTab(this,'tabTec')">Técnicos</button><button onclick="cadTab(this,'tabCom')">Comunidades</button><button onclick="cadTab(this,'tabEnt')">Associações & Cooperativas</button><button onclick="cadTab(this,'tabFrota')">Veículos & Máquinas</button></div>
+        <div class="panel" id="tabTec"><div class="panel-h"><h5>Corpo técnico</h5><button class="btn btn-p btn-sm-x" onclick="openEnt('tec')"><svg><use href="#i-plus"/></svg> Técnico</button></div>
+          <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Nome</th><th>Função</th><th>Registro</th><th>Situação</th></tr></thead><tbody id="tTec"></tbody></table></div></div>
+        <div class="panel" id="tabCom" style="display:none"><div class="panel-h"><h5>Comunidades rurais</h5><button class="btn btn-p btn-sm-x" onclick="openEnt('com')"><svg><use href="#i-plus"/></svg> Comunidade</button></div>
+          <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Comunidade</th><th>Agricultores</th><th>Atendimentos</th></tr></thead><tbody id="tCom"></tbody></table></div></div>
+        <div class="panel" id="tabEnt" style="display:none"><div class="panel-h"><h5>Organizações rurais</h5><button class="btn btn-p btn-sm-x" onclick="openEnt('ent')"><svg><use href="#i-plus"/></svg> Organização</button></div>
+          <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Nome</th><th>Tipo</th><th>Presidência</th><th>Associados</th></tr></thead><tbody id="tEnt"></tbody></table></div></div>
+        <div class="panel" id="tabFrota" style="display:none"><div class="panel-h"><h5>Frota e máquinas agrícolas</h5><button class="btn btn-p btn-sm-x" onclick="openEnt('frota')"><svg><use href="#i-plus"/></svg> Item</button></div>
+          <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Identificação</th><th>Categoria</th><th>Placa / Horas</th><th>Situação</th></tr></thead><tbody id="tFrota"></tbody></table></div></div>
+      </section>
+
+      <!-- ============ RELATÓRIOS ============ -->
+      <section class="view" id="view-relatorios">
+        <div class="vh"><div><span class="idx">06 · Inteligência</span><h2>Relatórios gerenciais</h2>
+          <p class="mb-0 small" style="color:var(--ink-soft)">Gere, visualize e exporte indicadores oficiais da Secretaria.</p></div></div>
+        <div class="row g-3" id="repCards"></div>
+        <div class="panel mt-3" id="repPanel" style="display:none">
+          <div class="panel-h"><h5 id="repTitle">—</h5>
+            <div class="d-flex gap-2">
+              <button class="btn btn-ghost btn-sm-x" onclick="repExportCSV()"><svg><use href="#i-down"/></svg> Excel</button>
+              <button class="btn btn-amber btn-sm-x" onclick="repPrint()"><svg><use href="#i-print"/></svg> PDF</button>
+            </div></div>
+          <div class="tbl-wrap" id="repBody"></div>
+        </div>
+      </section>
+
+      <!-- ============ USUÁRIOS ============ -->
+      <section class="view" id="view-usuarios">
+        <div class="vh"><div><span class="idx">07 · Administração</span><h2>Usuários e permissões</h2>
+          <p class="mb-0 small" style="color:var(--ink-soft)">Controle granular por módulo: visualizar, inserir, editar e excluir.</p></div>
+          <button class="btn btn-p btn-sm-x" onclick="openUserModal()"><svg><use href="#i-plus"/></svg> Novo usuário</button></div>
+        <div class="panel"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Usuário</th><th>E-mail</th><th>Perfil</th><th>Permissões</th><th>Situação</th><th style="width:150px">Ações</th></tr></thead><tbody id="usTbody"></tbody></table></div></div>
+      </section>
+
+      <!-- ============ AUDITORIA ============ -->
+      <section class="view" id="view-auditoria">
+        <div class="vh"><div><span class="idx">08 · Conformidade</span><h2>Auditoria e lixeira</h2>
+          <p class="mb-0 small" style="color:var(--ink-soft)">Trilha completa: login, inclusões, alterações, exclusões e segurança.</p></div>
+          <div class="seg"><button class="on" onclick="audTab(this,'audPaneLog')">Registro de eventos</button><button onclick="audTab(this,'audPaneTrash')">Lixeira</button></div></div>
+        <div id="audPaneLog" class="panel">
+          <div class="panel-h"><div class="d-flex gap-2 flex-wrap">
+            <input class="form-control form-control-sm" style="max-width:240px" placeholder="Buscar…" id="audFq" oninput="S.f.aud.q=this.value;renderAuditoria()">
+            <select class="form-select form-select-sm" style="width:auto" id="audFtipo" onchange="S.f.aud.tp=this.value;renderAuditoria()">
+              <option value="">Tipo: todos</option><option>Login/Sessão</option><option>Inclusão</option><option>Alteração</option><option>Exclusão</option><option>Segurança</option><option>Configuração</option></select>
+          </div><span class="mono small-xs" style="color:var(--ink-soft)" id="audCount"></span></div>
+          <div class="tbl-wrap" style="max-height:560px"><table class="tbl"><thead><tr><th>Data/Hora</th><th>Usuário</th><th>Ação</th><th>Registro afetado</th><th>IP</th></tr></thead><tbody id="audTbody"></tbody></table></div>
+        </div>
+        <div id="audPaneTrash" class="panel" style="display:none">
+          <div class="panel-h"><h5>Registros excluídos</h5><span class="small" style="color:var(--ink-soft)">Somente administradores podem restaurar.</span></div>
+          <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Registro</th><th>Tipo</th><th>Excluído em</th><th>Por</th><th>Ação</th></tr></thead><tbody id="trashTbody"></tbody></table></div>
+        </div>
+      </section>
+
+      <!-- ============ CONFIGURAÇÕES ============ -->
+      <section class="view" id="view-config">
+        <div class="vh"><div><span class="idx">09 · Município</span><h2>Configurações da Secretaria</h2>
+          <p class="mb-0 small" style="color:var(--ink-soft)">Identidade, serviços, notificações, segurança e backups.</p></div></div>
+        <div class="row g-3">
+          <div class="col-lg-6"><div class="panel h-100"><div class="panel-h"><h5>Identidade do tenant</h5></div><div class="panel-b">
+            <div class="row g-3"><div class="col-sm-8"><label class="form-label">Secretaria / Município</label><input class="form-control" id="cfgNome"></div>
+            <div class="col-sm-4"><label class="form-label">Sigla</label><input class="form-control" id="cfgSigla" maxlength="3"></div>
+            <div class="col-12"><label class="form-label">Brasão / Logo</label>
+              <div class="d-flex align-items-center gap-3"><div class="avatar lg" id="cfgLogoPrev">–</div>
+                <span class="small" style="color:var(--ink-soft)">Gerado automaticamente a partir da sigla · upload disponível na versão em produção.</span></div></div>
+            <div class="col-12"><button class="btn btn-p btn-sm-x" onclick="saveCfgIdent()">Salvar identidade</button></div></div>
+          </div></div></div>
+          <div class="col-lg-6"><div class="panel h-100"><div class="panel-h"><h5>Serviços habilitados</h5></div><div class="panel-b" id="cfgServ"></div></div></div>
+          <div class="col-lg-6"><div class="panel h-100"><div class="panel-h"><h5>Notificações automáticas</h5></div><div class="panel-b">
+            <div class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox" id="cfgNotifEmail"><label class="form-check-label small" for="cfgNotifEmail">E-mail — confirmação, alteração, cancelamento e lembrete</label></div>
+            <div class="form-check form-switch mb-3"><input class="form-check-input" type="checkbox" id="cfgNotifWhats"><label class="form-check-label small" for="cfgNotifWhats">WhatsApp via API (opcional)</label></div>
+            <label class="form-label">Lembrete de atendimento</label>
+            <select class="form-select form-select-sm" id="cfgLembrete" style="max-width:220px"><option>24 horas antes</option><option>48 horas antes</option><option>1 hora antes</option><option>Desativado</option></select>
+            <button class="btn btn-p btn-sm-x mt-3" onclick="saveCfgNotif()">Salvar notificações</button>
+          </div></div></div>
+          <div class="col-lg-6"><div class="panel h-100"><div class="panel-h"><h5>Segurança & Backup</h5></div><div class="panel-b">
+            <label class="form-label">Expiração de sessão por inatividade</label>
+            <select class="form-select form-select-sm mb-3" id="cfgSessao" style="max-width:220px"><option value="15">15 minutos</option><option value="30">30 minutos</option><option value="60">60 minutos</option></select>
+            <div class="d-flex justify-content-between align-items-center pb-2 border-bottom mb-2" style="border-color:var(--line-soft)!important"><span class="small">Status do backup</span><span class="mono small-xs" style="color:var(--g600)" id="cfgBkLast"></span></div>
+            <div id="cfgBkList" class="mb-3"></div>
+            <button class="btn btn-amber btn-sm-x" onclick="manualBackup()"><svg><use href="#i-down"/></svg> Verificar status do backup</button>
+          </div></div></div>
+        </div>
+      </section>
+
+      <!-- ============ SUPER ADMIN: MUNICÍPIOS ============ -->
+      <section class="view" id="view-municipios">
+        <div class="vh"><div><span class="idx">P · Plataforma</span><h2>Municípios (tenants)</h2>
+          <p class="mb-0 small" style="color:var(--ink-soft)">Prévia local de municípios fictícios; não há provisionamento nem isolamento de dados no servidor.</p></div>
+          <button class="btn btn-p btn-sm-x" onclick="openTenantModal()"><svg><use href="#i-plus"/></svg> Simular cadastro</button></div>
+        <div class="row g-3 mb-3" id="munKpis"></div>
+        <div class="panel"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Tenant</th><th>Município</th><th>Plano</th><th>Usuários</th><th>Agricultores</th><th>Armazenamento</th><th>Situação</th><th style="width:150px">Ações</th></tr></thead><tbody id="munTbody"></tbody></table></div></div>
+      </section>
+
+      <!-- ============ SUPER ADMIN: PLANOS ============ -->
+      <section class="view" id="view-planos">
+        <div class="vh"><div><span class="idx">P · Plataforma</span><h2>Planos e assinaturas</h2>
+          <p class="mb-0 small" style="color:var(--ink-soft)">Gestão comercial da plataforma SaaS estadual.</p></div></div>
+        <div class="row g-3" id="planRow"></div>
+      </section>
+
+      <!-- ============ SUPER ADMIN: LOGS GLOBAIS ============ -->
+      <section class="view" id="view-logs">
+        <div class="vh"><div><span class="idx">P · Plataforma</span><h2>Logs globais</h2>
+          <p class="mb-0 small" style="color:var(--ink-soft)">Trilha de auditoria consolidada de todos os municípios.</p></div>
+          <select class="form-select form-select-sm" style="width:auto" id="logFt" onchange="renderLogs()"><option value="">Município: todos</option></select></div>
+        <div class="panel"><div class="tbl-wrap" style="max-height:600px"><table class="tbl"><thead><tr><th>Data/Hora</th><th>Município</th><th>Usuário</th><th>Ação</th><th>Registro</th><th>IP</th></tr></thead><tbody id="logTbody"></tbody></table></div></div>
+      </section>
+
+      <!-- ============ SUPER ADMIN: INFRA ============ -->
+      <section class="view" id="view-infra">
+        <div class="vh"><div><span class="idx">P · Plataforma</span><h2>Infraestrutura</h2>
+          <p class="mb-0 small" style="color:var(--ink-soft)">SMTP, rotina de backups e monitoramento de uso.</p></div></div>
+        <div class="row g-3">
+          <div class="col-lg-4"><div class="panel"><div class="panel-h"><h5>Saúde da plataforma</h5></div><div class="panel-b" id="infraKpis"></div></div></div>
+          <div class="col-lg-4"><div class="panel"><div class="panel-h"><h5>Servidor SMTP</h5></div><div class="panel-b">
+            <p class="small" style="color:var(--ink-soft)">Configuração ilustrativa; o envio de e-mails não está conectado.</p>
+            <label class="form-label">Host</label><input class="form-control mb-2" id="smtpHost" placeholder="smtp.exemplo.gov.br">
+            <div class="row g-2 mb-2"><div class="col-6"><label class="form-label">Porta</label><input class="form-control" id="smtpPort" placeholder="587"></div>
+            <div class="col-6"><label class="form-label">Segurança</label><select class="form-select"><option>STARTTLS</option><option>SSL/TLS</option></select></div></div>
+            <label class="form-label">Usuário</label><input class="form-control mb-2" id="smtpUser" placeholder="usuario@exemplo.gov.br">
+            <label class="form-label">Senha</label><input type="password" class="form-control mb-3" placeholder="Não informe credenciais reais na demonstração">
+            <button class="btn btn-p btn-sm-x" onclick="saveSmtp()">Ver status da integração</button>
+          </div></div></div>
+          <div class="col-lg-4"><div class="panel"><div class="panel-h"><h5>Rotina de backup</h5></div><div class="panel-b">
+            <label class="form-label">Frequência</label><select class="form-select mb-2"><option>Diário — 02h00 (automático)</option><option>A cada 12 horas</option></select>
+            <label class="form-label">Retenção</label><select class="form-select mb-3"><option>30 dias</option><option>90 dias</option><option>365 dias</option></select>
+            <h6 class="small fw-bold mt-3 mb-2">Armazenamento por município</h6><div id="infraStorage"></div>
+          </div></div></div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- ======================= MODAIS ======================= -->
+<div class="modal fade" id="mAgd" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title" id="mAgdTitle">Novo agendamento</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body"><div class="row g-3">
+    <div class="col-md-7"><label class="form-label">Agricultor(a) *</label><select class="form-select" id="aAgri"></select></div>
+    <div class="col-md-5"><label class="form-label">Serviço *</label><select class="form-select" id="aServ"></select></div>
+    <div class="col-md-5"><label class="form-label">Técnico(a) responsável *</label><select class="form-select" id="aTec"></select></div>
+    <div class="col-md-4"><label class="form-label">Data</label><input type="date" class="form-control" id="aData"></div>
+    <div class="col-md-3"><label class="form-label">Hora</label><input type="time" class="form-control" id="aHora" value="09:00" step="1800"></div>
+    <div class="col-md-4"><label class="form-label">Status</label><select class="form-select" id="aStatus"></select></div>
+    <div class="col-12"><label class="form-label">Observações</label><textarea class="form-control" id="aObs" rows="2" placeholder="Documentos necessários, referências de acesso…"></textarea></div>
+  </div></div>
+  <div class="modal-footer"><button class="btn btn-ghost" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-p" onclick="saveAgd()">Salvar agendamento</button></div>
+</div></div></div>
+
+<div class="modal fade" id="mAgdV" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title mono" id="avNum">—</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body" id="avBody"></div>
+  <div class="modal-footer flex-wrap" id="avActions"></div>
+</div></div></div>
+
+<div class="modal fade" id="mAgri" tabindex="-1"><div class="modal-dialog modal-xl modal-dialog-scrollable"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title" id="mAgriTitle">Novo agricultor</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <fieldset><legend>Dados pessoais</legend><div class="row g-3">
+      <div class="col-md-6"><label class="form-label">Nome completo *</label><input class="form-control" id="rNome"></div>
+      <div class="col-md-3"><label class="form-label">CPF *</label><input class="form-control" id="rCpf" placeholder="000.000.000-00"></div>
+      <div class="col-md-3"><label class="form-label">RG</label><input class="form-control" id="rRg"></div>
+      <div class="col-md-3"><label class="form-label">NIS</label><input class="form-control" id="rNis"></div>
+      <div class="col-md-3"><label class="form-label">DAP/CAF</label><input class="form-control" id="rDap" placeholder="PA-000000"></div>
+      <div class="col-md-3"><label class="form-label">Nascimento</label><input type="date" class="form-control" id="rNasc"></div>
+      <div class="col-md-3"><label class="form-label">Sexo</label><select class="form-select" id="rSexo"><option>Feminino</option><option>Masculino</option><option>Não informar</option></select></div>
+      <div class="col-md-3"><label class="form-label">Estado civil</label><select class="form-select" id="rECiv"><option>Solteiro(a)</option><option>Casado(a)</option><option>União estável</option><option>Viúvo(a)</option><option>Divorciado(a)</option></select></div>
+      <div class="col-md-3"><label class="form-label">Telefone</label><input class="form-control" id="rTel" placeholder="(91) 90000-0000"></div>
+      <div class="col-md-3"><label class="form-label">WhatsApp</label><input class="form-control" id="rWhats"></div>
+      <div class="col-md-6"><label class="form-label">E-mail</label><input type="email" class="form-control" id="rEmail"></div>
+    </div></fieldset>
+    <fieldset class="mt-4"><legend>Endereço</legend><div class="row g-3">
+      <div class="col-md-2"><label class="form-label">CEP</label><input class="form-control" id="rCep"></div>
+      <div class="col-md-4"><label class="form-label">Município</label><input class="form-control" id="rMun" readonly></div>
+      <div class="col-md-3"><label class="form-label">Comunidade</label><select class="form-select" id="rCom"></select></div>
+      <div class="col-md-3"><label class="form-label">Ramal</label><input class="form-control" id="rRamal"></div>
+      <div class="col-md-3"><label class="form-label">Bairro</label><input class="form-control" id="rBairro"></div>
+      <div class="col-md-4"><label class="form-label">Rua / Vila</label><input class="form-control" id="rRua"></div>
+      <div class="col-md-2"><label class="form-label">Número</label><input class="form-control" id="rNum"></div>
+      <div class="col-md-3"><label class="form-label">Coordenadas GPS</label><input class="form-control" id="rGps" placeholder="-2.99, -48.94"></div>
+    </div></fieldset>
+    <fieldset class="mt-4"><legend>Produção rural</legend><div class="row g-3">
+      <div class="col-md-4"><label class="form-label">Cultura principal</label><select class="form-select" id="rCult"></select></div>
+      <div class="col-md-2"><label class="form-label">Área (ha)</label><input type="number" class="form-control" id="rArea" step="0.1"></div>
+      <div class="col-md-3"><label class="form-label">Produção (t/ano)</label><input type="number" class="form-control" id="rProd" step="0.1"></div>
+      <div class="col-md-3"><label class="form-label">Tipo de produção</label><select class="form-select" id="rTipo"><option>Subsistência</option><option>Comercial</option><option>Mista</option></select></div>
+      <div class="col-md-4"><div class="form-check form-switch mt-4"><input class="form-check-input" type="checkbox" id="rFam" checked><label class="form-check-label small" for="rFam">Agricultura familiar (Lei 11.326)</label></div></div>
+      <div class="col-md-4"><label class="form-label">Cooperativa vinculada</label><select class="form-select" id="rCoop"><option value="">Nenhuma</option></select></div>
+    </div></fieldset>
+    <fieldset class="mt-4"><legend>Documentos (anexos)</legend>
+      <div class="d-flex gap-2 flex-wrap" id="rDocs"></div>
+      <p class="small-xs mt-2 mb-0" style="color:var(--ink-soft)">RG · CPF · CAF · Comprovante de residência · Fotos da propriedade</p>
+    </fieldset>
+  </div>
+  <div class="modal-footer"><button class="btn btn-ghost" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-p" onclick="saveAgri()">Salvar cadastro</button></div>
+</div></div></div>
+
+<div class="modal fade" id="mUser" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title" id="mUserTitle">Novo usuário</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body"><div class="row g-3">
+    <div class="col-12"><label class="form-label">Nome completo</label><input class="form-control" id="uNome"></div>
+    <div class="col-12"><label class="form-label">E-mail institucional</label><input type="email" class="form-control" id="uEmail"></div>
+    <div class="col-md-6"><label class="form-label">Perfil</label><select class="form-select" id="uPapel"><option value="admin">Administrador municipal</option><option value="user">Usuário comum</option></select></div>
+    <div class="col-md-6"><label class="form-label">Senha provisória</label><input class="form-control" id="uSenha" placeholder="mínimo 8 caracteres"></div>
+    <div class="col-12"><div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="uAtivo" checked><label class="form-check-label small" for="uAtivo">Usuário ativo</label></div></div>
+  </div></div>
+  <div class="modal-footer"><button class="btn btn-ghost" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-p" onclick="saveUser()">Salvar usuário</button></div>
+</div></div></div>
+
+<div class="modal fade" id="mPerms" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title">Matriz de permissões — <span id="pName"></span></h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body" id="pGrid"></div>
+  <div class="modal-footer"><button class="btn btn-ghost" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-p" onclick="savePerms()">Aplicar permissões</button></div>
+</div></div></div>
+
+<div class="modal fade" id="mDel" tabindex="-1"><div class="modal-dialog modal-sm"><div class="modal-content">
+  <div class="modal-body text-center py-4"><div class="mx-auto mb-3" style="width:48px;height:48px;border-radius:12px;background:color-mix(in srgb,var(--danger) 12%,transparent);display:grid;place-items:center;color:var(--danger)"><svg style="width:22px;height:22px"><use href="#i-trash"/></svg></div>
+    <h5 class="df" id="cdTitle">Confirmar exclusão</h5><p class="small mb-0" style="color:var(--ink-soft)" id="cdMsg"></p></div>
+  <div class="modal-footer justify-content-center border-0 pt-0"><button class="btn btn-ghost" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-danger-soft" id="cdOk">Excluir</button></div>
+</div></div></div>
+
+<div class="modal fade" id="mDenied" tabindex="-1"><div class="modal-dialog modal-sm"><div class="modal-content">
+  <div class="modal-body text-center py-4"><div class="mx-auto mb-3" style="width:48px;height:48px;border-radius:12px;background:var(--amber-soft);display:grid;place-items:center;color:var(--amber)"><svg style="width:22px;height:22px"><use href="#i-lock"/></svg></div>
+    <h5 class="df">Acesso restrito</h5><p class="small mb-0" style="color:var(--ink-soft)">Você não possui permissão para excluir registros. Procure um administrador.</p></div>
+  <div class="modal-footer justify-content-center border-0 pt-0"><button class="btn btn-p btn-sm-x" data-bs-dismiss="modal">Entendi</button></div>
+</div></div></div>
+
+<div class="modal fade" id="mEnt" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title" id="eTitle">Novo registro</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body"><div class="row g-3" id="eFields"></div></div>
+  <div class="modal-footer"><button class="btn btn-ghost" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-p" onclick="saveEnt()">Salvar</button></div>
+</div></div></div>
+
+<div class="modal fade" id="mTenant" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header"><h5 class="modal-title">Cadastrar município</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body"><div class="row g-3">
+    <div class="col-md-8"><label class="form-label">Município</label><input class="form-control" id="tNome" placeholder="Ex.: Santa Izabel do Pará"></div>
+    <div class="col-md-4"><label class="form-label">Sigla</label><input class="form-control" id="tSigla" maxlength="3" placeholder="SIP"></div>
+    <div class="col-md-6"><label class="form-label">Plano</label><select class="form-select" id="tPlano"><option>Essencial</option><option selected>Profissional</option><option>Estadual</option></select></div>
+    <div class="col-md-6"><label class="form-label">E-mail fictício do administrador</label><input class="form-control" id="tEmail" placeholder="admin@exemplo.invalid"></div>
+  </div></div>
+  <div class="modal-footer"><button class="btn btn-ghost" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-p" onclick="saveTenant()">Simular cadastro</button></div>
+</div></div></div>
+
+<!-- Drawer agricultor -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="drwAgri" style="width:min(480px,94vw)"><div class="offcanvas-body p-0" id="drwBody"></div></div>
+
+<div id="toasts"></div>
+<div id="printArea"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+/* ==================================================================
+   SIGA PARÁ · Protótipo SaaS Multitenant — lógica de negócio simulada
+   Em produção: Node.js + Express + PostgreSQL (schema no blueprint)
+================================================================== */
+'use strict';
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad=n=>String(n).padStart(2,'0');
+const iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const pISO=s=>{const[a,b,c]=s.split('-').map(Number);return new Date(a,b-1,c)};
+const fmtBR=s=>{const d=pISO(s);return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`};
+const hojeISO=()=>iso(new Date());
+const MESES=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+const MESES_C=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const ic=n=>`<svg style="width:15px;height:15px"><use href="#i-${n}"/></svg>`;
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+let R=mulberry32(20260829);
+const ri=(a,b)=>Math.floor(R()*(b-a+1))+a, pk=a=>a[Math.floor(R()*a.length)];
+const uid=()=>Math.random().toString(36).slice(2,9);
+
+/* ------------------------- SEED / BANCO ------------------------- */
+const SERVICES=['Emissão CAF','Renovação CAF','Declarações','Atendimento Técnico','Emissão de Laudos','Cadastro Rural','Assistência Técnica','Projetos de Crédito Rural','Regularização Fundiária','Outros'];
+const STATUS=['Agendado','Confirmado','Em Atendimento','Concluído','Cancelado','Não Compareceu'];
+const stCls=s=>'st-'+String(s).replace(/[^A-Za-z0-9_-]/g,'');
+const chipSt=s=>`<span class="chip ${stCls(s)}"><i></i>${esc(s)}</span>`;
+const CROPS=['Mandioca','Pimenta-do-reino','Açaí','Cacau','Banana','Milho','Feijão','Maracujá','Abacaxi','Dendê','Citros','Hortaliças'];
+const F1=['Maria','José','Antônio','Francisca','João','Raimunda','Raimundo','Ana','Luiz','Carlos','Francisco','Rita','Sebastião','Tereza','Marcos','Edna','Benedito','Iracema','Domingos','Margarida','Pedro','Rosa','Manoel','Aparecida','Valdemar','Claudete','Ivan','Socorro','Ernesto','Aldeci','Wanderley','Neusa'];
+const F2=['da Silva','dos Santos','Souza','Oliveira','Pereira','Ferreira','Almeida','Costa','Rodrigues','Gomes','Martins','Barbosa','Ribeiro','Carvalho','Mendes','Nunes','Lopes','Teixeira','Pantoja','Baía','Vasconcelos','Quadros','Farias','Corrêa','Santa Rosa','do Nascimento'];
+const COMPOOL=['Santa Luzia','São Francisco','Bela Vista','Alto Alegre','Vila Nova','Boa Vista','Santa Maria','Baixa Grande','Igarapé Preto','Ramal do Tauari','Guajará','Jabotiteua','Cachoeira do Arari','São Benedito','Nova Esperança','Lago Azul','Travessão','KM 12','Rio Branco','Boa Fé'];
+const TECPOOL=[['Ana Beatriz Souza','Engenheira Agrônoma','CREA-PA 48.211'],['Carlos Eduardo Lima','Técnico Agrícola','CFTA 10.447'],['Maria do Socorro Pantoja','Engenheira Agrônoma','CREA-PA 51.930'],['João Pedro Ferreira','Zootecnista','CRMV 3.112'],['Elane Cardoso','Técnica em Agropecuária','CFTA 12.084'],['Benedito Raiol','Agrônomo','CREA-PA 44.002']];
+
+let DB=null,STORAGE_WRITE_FAILED=false,STORAGE_ERROR_NOTIFIED=false;
+function seed(){
+  const T=[['Concórdia do Pará','CNP','Profissional',342],['Bujaru','BUJ','Profissional',218],['Tomé-Açu','TMA','Estadual',517],['Moju','MOJ','Profissional',388],['Abaetetuba','ABA','Estadual',604],['Acará','ACA','Essencial',96],['Igarapé-Miri','IGM','Profissional',264],['Barcarena','BRC','Estadual',472],['Castanhal','CST','Profissional',301]];
+  const tenants=T.map((t,i)=>({id:'t'+pad(i+1),nome:t[0],sigla:t[1],plano:t[2],ativo:true,storage:t[3],storageMax:t[2]==='Essencial'?10*1024:t[2]==='Profissional'?50*1024:200*1024,criadoEm:`2025-0${(i%6)+1}-1${i}`,servicos:[...SERVICES],notif:{email:true,whats:i%2===0,lembrete:'24 horas antes'},backups:[{t:'Exemplo',d:yestISO(1),s:'Simulado'},{t:'Exemplo',d:yestISO(2),s:'Simulado'}]}));
+  function yestISO(n){const d=new Date();d.setDate(d.getDate()-n);return iso(d)}
+  const defP=(full)=>({cadastros:{ver:1,ins:1,edi:1,exc:full?1:0},agendamentos:{ver:1,ins:1,edi:1,exc:full?1:0},relatorios:{ver:1,pdf:full?1:0,xls:full?1:0},config:{ver:full?1:0,edi:full?1:0}});
+  const users=[
+    {id:'u0',tenantId:null,nome:'Suporte SIGA Estadual',email:'superadmin@siga.pa.gov.br',senha:'siga2026',role:'super',ativo:true,perms:null},
+    {id:'u1',tenantId:'t01',nome:'Maria das Graças Oliveira',email:'admin@concordia.pa.gov.br',senha:'admin123',role:'admin',ativo:true,perms:defP(1)},
+    {id:'u2',tenantId:'t01',nome:'Pedro Henrique Costa',email:'servidor@concordia.pa.gov.br',senha:'servidor',role:'user',ativo:true,perms:defP(0)},
+    {id:'u3',tenantId:'t01',nome:'Juliana Mendes Raiol',email:'juliana@concordia.pa.gov.br',senha:'servidor',role:'user',ativo:true,perms:{cadastros:{ver:1,ins:1,edi:1,exc:0},agendamentos:{ver:1,ins:1,edi:0,exc:0},relatorios:{ver:1,pdf:1,xls:0},config:{ver:0,edi:0}}},
+    {id:'u4',tenantId:'t02',nome:'Raimundo Nonato Baía',email:'admin@bujaru.pa.gov.br',senha:'admin123',role:'admin',ativo:true,perms:defP(1)},
+    {id:'u5',tenantId:'t03',nome:'Tereza Corrêa Lima',email:'admin@tomeacu.pa.gov.br',senha:'admin123',role:'admin',ativo:true,perms:defP(1)},
+  ];
+  const agri=[],agd=[],tec=[],coms=[],ent=[],frota=[];
+  const sizes={t01:34,t02:16,t03:12,t04:14,t05:18,t06:8,t07:11,t08:15,t09:20};
+  let an=0,gseq={};
+  const hoje=new Date(), ano=hoje.getFullYear();
+  tenants.forEach(t=>{
+    const nCom=ri(4,7), tComs=[];
+    for(let i=0;i<nCom;i++){const nm=pk(COMPOOL)+(R()<.4?' do '+pk(['Arari','Guamá','Mocajuba','Cauré','Jabuti']):'');tComs.push(nm);coms.push({id:uid(),tenantId:t.id,nome:nm})}
+    const nTec=t.plano==='Essencial'?2:t.plano==='Profissional'?4:5;
+    const tTecs=[];for(let i=0;i<nTec;i++){const p=TECPOOL[(tenants.indexOf(t)+i)%TECPOOL.length];tTecs.push(p[0]);tec.push({id:uid(),tenantId:t.id,nome:p[0],funcao:p[1],registro:p[2],ativo:true})}
+    ent.push({id:uid(),tenantId:t.id,nome:'Associação dos Produtores de '+pk(tComs),tipo:'Associação',pres:pk(F1)+' '+pk(F2),mem:ri(18,120)});
+    ent.push({id:uid(),tenantId:t.id,nome:'Cooperativa Agroextrativista '+t.sigla,tipo:'Cooperativa',pres:pk(F1)+' '+pk(F2),mem:ri(30,210)});
+    frota.push({id:uid(),tenantId:t.id,nome:'Fiat Strada Endurance',cat:'Veículo leve',placa:'Q'+t.sigla[0]+'L-'+ri(1000,9999),st:'Disponível'});
+    frota.push({id:uid(),tenantId:t.id,nome:'Trator '+pk(['John Deere 5078E','Massey 4310','New Holland TT40']),cat:'Máquina agrícola',placa:ri(300,2400)+' h',st:R()<.8?'Operacional':'Em manutenção'});
+    const coops=ent.filter(e=>e.tenantId===t.id).map(e=>e.nome);
+    for(let i=0;i<sizes[t.id];i++){
+      an++;const fem=R()<.5,nome=pk(F1)+' '+pk(F2)+' '+pk(F2);
+      const dapOk=R()<.72;
+      agri.push({id:'a'+an,tenantId:t.id,nome,sexo:fem?'Feminino':'Masculino',
+        cpf:`${ri(100,999)}.${ri(100,999)}.${ri(100,999)}-${ri(10,99)}`,rg:`${ri(1000000,9999999)}`,nis:`${ri(10000000000,29999999999)}`,
+        dap:dapOk?`PA-${ri(100000,999999)}`:'',dapOk,
+        nasc:`${ri(1952,2002)}-${pad(ri(1,12))}-${pad(ri(1,28))}`,eciv:pk(['Casado(a)','Solteiro(a)','União estável','Viúvo(a)']),
+        tel:`(91) 9${ri(8000,9999)}-${ri(1000,9999)}`,whats:R()<.8?`(91) 9${ri(8000,9999)}-${ri(1000,9999)}`:'',email:R()<.2?nome.split(' ')[0].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')+'@gmail.com':'',
+        comunidade:pk(tComs),ramal:R()<.5?`Ramal do ${pk(['Açaí','Cacau','Patauá','Bacaba','Munim','Guamá'])}, km ${ri(1,42)}`:'',
+        cultura:pk(CROPS),area:(ri(5,480)/10),prod:(ri(20,720)/10),tipo:pk(['Mista','Comercial','Subsistência']),familiar:R()<.82,coop:R()<.32?pk(coops):''});
+    }
+    gseq[t.id]=0;
+    const nAgd=Math.round(sizes[t.id]*1.35), tAgri=agri.filter(a=>a.tenantId===t.id);
+    for(let i=0;i<nAgd;i++){
+      gseq[t.id]++;const past=R()<.62, d=new Date(hoje);
+      if(past){d.setDate(d.getDate()-ri(0,Math.max(1,hoje.getDate()-1)+(R()<.5?30:0)))}else{d.setDate(d.getDate()+ri(0,18))}
+      const sameDay=iso(d)===hojeISO();
+      let st; if(sameDay)st=pk(['Agendado','Confirmado','Confirmado','Em Atendimento','Agendado']);
+      else if(d<hoje)st=pk(['Concluído','Concluído','Concluído','Concluído','Cancelado','Não Compareceu','Concluído']);
+      else st=pk(['Agendado','Agendado','Confirmado','Agendado']);
+      const a=pk(tAgri);
+      agd.push({id:uid(),tenantId:t.id,num:`AGD-${ano}-${String(gseq[t.id]).padStart(4,'0')}`,data:iso(d),hora:`${pad(ri(8,16))}:${R()<.5?'00':'30'}`,
+        agriId:a.id,agriNome:a.nome,servico:pk(SERVICES),tecnico:pk(tTecs),comunidade:a.comunidade,status:st,obs:''});
+    }
+    // garante movimento hoje no t01
+    if(t.id==='t01'){['08:30','10:00','14:30'].forEach((h,i)=>{const a=tAgri[i];gseq.t01++;
+      agd.push({id:uid(),tenantId:'t01',num:`AGD-${ano}-${String(gseq.t01).padStart(4,'0')}`,data:hojeISO(),hora:h,agriId:a.id,agriNome:a.nome,servico:SERVICES[i*3],tecnico:tTecs[i%tTecs.length],comunidade:a.comunidade,status:['Em Atendimento','Confirmado','Agendado'][i],obs:''})})}
+  });
+  const audit=[{id:uid(),tenantId:null,user:'Suporte SIGA',acao:'tenant.demonstracao',reg:'Prévia inicializada com 9 municípios fictícios',ip:'Demonstração',ts:new Date(Date.now()-86400000*12).toISOString(),tipo:'Demonstração'}];
+  const notifs=[];tenants.forEach(t=>{
+    notifs.push({id:uid(),tenantId:t.id,titulo:'Exemplo de lembrete',corpo:'Notificação ilustrativa. O envio de e-mails não está configurado.',ts:new Date(Date.now()-3600000*5).toISOString(),read:false});
+    notifs.push({id:uid(),tenantId:t.id,titulo:'Exemplo de backup',corpo:'Registro ilustrativo. Nenhum backup de servidor foi executado.',ts:new Date(Date.now()-3600000*26).toISOString(),read:true});
+  });
+  const hist={};tenants.forEach(t=>{const base=sizes[t.id]*2;const vals=[];const now=new Date();
+    for(let i=5;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);vals.push({l:MESES_C[d.getMonth()]+'/'+String(d.getFullYear()).slice(2),v:Math.round(base*(0.65+R()*0.7))})}
+    hist[t.id]=vals});
+  DB={tenants,users,agri,agd,tec,coms,ent,frota,audit,notifs,hist,trash:[],gseq};
+  save();
+}
+function save(){
+  try{localStorage.setItem('siga_pa_v2',JSON.stringify(DB));STORAGE_WRITE_FAILED=false;STORAGE_ERROR_NOTIFIED=false;return true}
+  catch(error){
+    STORAGE_WRITE_FAILED=true;console.error('Falha ao salvar os dados de demonstração neste navegador.',error);
+    if(!STORAGE_ERROR_NOTIFIED){STORAGE_ERROR_NOTIFIED=true;toast('Falha ao salvar','O armazenamento local não está disponível. As alterações podem ser perdidas.','err')}
+    return false;
+  }
+}
+function savePreference(key,value){
+  try{localStorage.setItem(key,value);return true}
+  catch(error){console.error(`Falha ao salvar a preferência "${key}".`,error);toast('Preferência não salva','O armazenamento do navegador não está disponível.','err');return false}
+}
+function load(){
+  const raw=localStorage.getItem('siga_pa_v2');
+  if(!raw)return false;
+  const data=JSON.parse(raw);
+  const collections=['tenants','users','agri','agd','tec','coms','ent','frota','audit','notifs'];
+  if(!data||typeof data!=='object'||collections.some(key=>!Array.isArray(data[key])))throw new Error('Os dados locais não têm o formato esperado.');
+  DB=data;
+  return true;
+}
+
+/* ------------------------- SESSÃO / ESTADO ------------------------- */
+let S={user:null,f:{agd:{q:'',st:'',sv:'',tc:''},agri:{q:'',com:''},aud:{q:'',tp:''}},calCur:new Date(),calView:'month',editAgd:null,editAgri:null,editUser:null,permUser:null,entType:null,charts:{},rep:null,limit:30*60,last:Date.now(),ip:''};
+let pg={agd:1,agri:1};
+const T=()=>DB.tenants.find(t=>t.id===S.user.tenantId);
+const tName=id=>{const t=DB.tenants.find(x=>x.id===id);return t?t.nome:'—'};
+function can(mod,act){const u=S.user;if(!u)return false;if(u.role==='super'||u.role==='admin')return true;return !!(u.perms&&u.perms[mod]&&u.perms[mod][act])}
+function isAdmin(){return S.user&&(S.user.role==='admin'||S.user.role==='super')}
+function denied(){bootstrap.Modal.getOrCreateInstance($('mDenied')).show()}
+function setTenantChip(title,details){
+  const name=document.createElement('b'),meta=document.createElement('small');
+  name.textContent=title;meta.textContent=details;$('tenantChip').replaceChildren(name,meta);
+}
+function audit(acao,reg,tipo){DB.audit.unshift({id:uid(),tenantId:S.user?S.user.tenantId:null,user:S.user?S.user.nome:'sistema',acao,reg,ip:S.ip||'Local (demonstração)',ts:new Date().toISOString(),tipo:tipo||'Alteração'});save()}
+function toast(titulo,corpo,type='ok'){
+  if(STORAGE_WRITE_FAILED&&type==='ok')return;
+  const el=document.createElement('div'),title=document.createElement('b'),message=document.createElement('span');
+  el.className='toastx '+type;title.textContent=titulo;message.textContent=corpo;el.append(title,message);$('toasts').appendChild(el);
+  setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .4s';setTimeout(()=>el.remove(),400)},4600)
+}
+function askConfirm(titulo,msg){return new Promise(res=>{$('cdTitle').textContent=titulo;$('cdMsg').textContent=msg;const m=bootstrap.Modal.getOrCreateInstance($('mDel'));const ok=$('cdOk');const n=ok.cloneNode(true);ok.replaceWith(n);n.addEventListener('click',()=>{m.hide();res(true)});m.show();$('mDel').addEventListener('hidden.bs.modal',()=>res(false),{once:true})})}
+function countUp(el,v){if(REDUCED){el.textContent=v.toLocaleString('pt-BR');return}const t0=performance.now(),dur=900;const step=t=>{const p=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-p,3);el.textContent=Math.round(v*e).toLocaleString('pt-BR');if(p<1)requestAnimationFrame(step)};requestAnimationFrame(step)}
+const decodeChars='▮▓#%&§*+';
+function scramble(el,txt){if(REDUCED){el.textContent=txt;return}let i=0;const total=Math.max(8,txt.length);clearInterval(el._d);el._d=setInterval(()=>{el.textContent=txt.split('').map((c,j)=>j<i?c:(c===' '?' ':decodeChars[Math.floor(Math.random()*decodeChars.length)])).join('');i+=Math.ceil(total/9);if(i>txt.length){el.textContent=txt;clearInterval(el._d)}},34)}
+
+/* ------------------------- LOGIN / RECUPERAÇÃO ------------------------- */
+function gatePane(id){['paneLogin','paneFp1','paneFp2','paneFp3'].forEach(p=>$(p).style.display='none');$(id).style.display='block'}
+function fillLogin(e,p){$('gEmail').value=e;$('gPass').value=p;$('gEmail').focus()}
+$('gForm').addEventListener('submit',e=>{e.preventDefault();doLogin($('gEmail').value.trim().toLowerCase(),$('gPass').value)});
+function doLogin(email,senha){
+  const u=DB.users.find(x=>x.email.toLowerCase()===email);
+  const err=$('gErr');err.style.display='none';
+  if(!u||u.senha!==senha){err.textContent='Credenciais inválidas. Verifique e-mail e senha.';err.style.display='block';return}
+  if(!u.ativo){err.textContent='Usuário desativado. Contate o administrador municipal.';err.style.display='block';return}
+  if(u.tenantId){const t=DB.tenants.find(t=>t.id===u.tenantId);if(!t.ativo){err.textContent='Município suspenso pela administração da plataforma. Contate o suporte estadual.';err.style.display='block';return}}
+  S.user=u;S.ip='Local (demonstração)';S.last=Date.now();
+  const savedLimit=Number.parseInt(localStorage.getItem('siga_limit')||'30',10);
+  S.limit=([15,30,60].includes(savedLimit)?savedLimit:30)*60;
+  audit('login','Acesso de demonstração (sem autenticação real)','Login/Sessão');
+  enterApp();
+}
+function enterApp(){
+  $('gate').style.display='none';$('app').style.display='grid';
+  const u=S.user,tn=u.tenantId?T():null;
+  setTenantChip(u.role==='super'?'Plataforma Estadual':'Prefeitura de '+tn.nome,u.role==='super'?'SUPER ADMIN · TODOS OS TENANTS':'TENANT '+tn.id.toUpperCase()+' · SEC. DE AGRICULTURA');
+  const ini=u.nome.split(' ').map(x=>x[0]).slice(0,2).join('');
+  $('suAvatar').textContent=ini;$('topAvatar').textContent=ini;$('suName').textContent=u.nome.split(' ')[0]+' '+u.nome.split(' ').slice(-1)[0];
+  $('suRole').textContent=u.role==='super'?'Super Admin':u.role==='admin'?'Administrador Municipal':'Usuário Comum';
+  $('topName').textContent=u.nome.split(' ')[0];$('ddName').textContent=u.nome;$('ddMail').textContent=u.email;
+  buildNav();buildBell();startSession();
+  showView(u.role==='super'?'municipios':'dashboard');
+  toast('Bem-vindo(a), '+u.nome.split(' ')[0]+'!',u.role==='super'?'Prévia local da plataforma carregada.':'Prévia local do município '+tName(u.tenantId)+' carregada.');
+}
+function doLogout(msg){if(S.user)audit('logout','Sessão encerrada','Login/Sessão');S.user=null;$('app').style.display='none';$('gate').style.display='grid';$('gPass').value='';if(msg)setTimeout(()=>toast('Sessão encerrada',msg,'err'),300)}
+function fpSend(){const e=$('fpEmail').value.trim().toLowerCase();const u=DB.users.find(x=>x.email.toLowerCase()===e);
+  if(!u){toast('E-mail não encontrado','Nenhuma conta está cadastrada com este e-mail.','err');return}
+  const tok=uid().toUpperCase()+uid().toUpperCase().slice(0,4).toUpperCase();
+  $('fpTokenLbl').textContent=tok;
+  S._fpUser=u;DB.audit.unshift({id:uid(),tenantId:u.tenantId,user:u.nome,acao:'senha.recuperacao.demonstracao',reg:'Código de demonstração exibido na tela; nenhum e-mail foi enviado',ip:S.ip||'Local (demonstração)',ts:new Date().toISOString(),tipo:'Demonstração'});save();
+  gatePane('paneFp2');
+}
+function fpDone(){const p1=$('fpPass').value,p2=$('fpPass2').value;
+  if(p1.length<8){toast('Senha fraca','A nova senha deve ter no mínimo 8 caracteres.','err');return}
+  if(p1!==p2){toast('Confirmação inválida','As senhas não coincidem.','err');return}
+  S._fpUser.senha=p1;DB.audit.unshift({id:uid(),tenantId:S._fpUser.tenantId,user:S._fpUser.nome,acao:'senha.redefinida',reg:'Senha alterada na demonstração local, sem criptografia ou serviço de e-mail',ip:S.ip||'Local (demonstração)',ts:new Date().toISOString(),tipo:'Demonstração'});save();
+  gatePane('paneLogin');toast('Senha de demonstração alterada','A alteração vale somente neste navegador. Nenhum e-mail foi enviado.');
+}
+
+/* ------------------------- NAVEGAÇÃO ------------------------- */
+const NAV=[
+ {g:'Operação',items:[['dashboard','grid','Painel'],['calendario','cal','Calendário'],['agendamentos','ticket','Agendamentos'],['agricultores','leaf','Agricultores'],['cadastros','folder','Cadastros']]},
+ {g:'Gestão',items:[['relatorios','chart','Relatórios','relatorios'],['usuarios','shield','Usuários','@admin'],['auditoria','scroll','Auditoria','@admin'],['config','gear','Configurações','config']]}
+];
+const SNAV={g:'Plataforma',items:[['municipios','build','Municípios'],['planos','layers','Planos'],['logs','globe','Logs globais'],['infra','server','Infraestrutura']]};
+const TITLES={dashboard:['01 · Painel','Painel executivo'],calendario:['02 · Agenda','Calendário'],agendamentos:['03 · Operações','Agendamentos'],agricultores:['04 · Cadastro rural','Agricultores'],cadastros:['05 · Base','Cadastros'],relatorios:['06 · Inteligência','Relatórios'],usuarios:['07 · Administração','Usuários'],auditoria:['08 · Conformidade','Auditoria'],config:['09 · Município','Configurações'],municipios:['P · Plataforma','Municípios'],planos:['P · Plataforma','Planos'],logs:['P · Plataforma','Logs globais'],infra:['P · Plataforma','Infraestrutura']};
+function navAllowed(it){const u=S.user;if(u.role==='super')return true;const g=it[3];if(!g)return true;if(g==='@admin')return u.role==='admin';return can(g,'ver')}
+function buildNav(){
+  const groups=S.user.role==='super'?[SNAV]:NAV;
+  $('sideNav').innerHTML=groups.map(g=>`<div class="nav-g">${g.g}</div>`+g.items.filter(navAllowed).map(it=>`<a class="nav-it" data-v="${it[0]}" href="javascript:void(0)" onclick="showView('${it[0]}')"><svg><use href="#i-${it[1]}"/></svg>${it[2]}</a>`).join('')).join('');
+}
+function showView(v){
+  const ok=S.user.role==='super'?SNAV.items.some(i=>i[0]===v):NAV.some(g=>g.items.some(i=>i[0]===v&&navAllowed(i)));
+  if(!ok){denied();return}
+  document.querySelectorAll('.view').forEach(s=>s.style.display='none');
+  $('view-'+v).style.display='block';
+  document.querySelectorAll('.nav-it').forEach(a=>a.classList.toggle('active',a.dataset.v===v));
+  $('modIdx').textContent=TITLES[v][0];scramble($('modTitle'),TITLES[v][1]);
+  toggleSide(false);
+  ({dashboard:renderDashboard,calendario:renderCalendar,agendamentos:renderAgendamentos,agricultores:renderAgricultores,cadastros:renderCadastros,relatorios:renderRelatorios,usuarios:renderUsuarios,auditoria:renderAuditoria,config:renderConfig,municipios:renderMunicipios,planos:renderPlanos,logs:renderLogs,infra:renderInfra})[v]();
+}
+function toggleSide(on){$('side').classList.toggle('open',on);$('scrim').classList.toggle('on',on)}
+
+/* ------------------------- PAINEL ------------------------- */
+function renderDashboard(){
+  const t=T(),now=new Date(),h=now.getHours();
+  $('dashHello').textContent=`${h<12?'Bom dia':h<18?'Boa tarde':'Boa noite'}, ${S.user.nome.split(' ')[0]} — ${t.nome}`;
+  $('dashDate').textContent=new Intl.DateTimeFormat('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(now)+' · Secretaria Municipal de Agricultura';
+  const agdT=DB.agd.filter(a=>a.tenantId===t.id),hISO=hojeISO(),mKey=hojeISO().slice(0,7);
+  const agriN=DB.agri.filter(a=>a.tenantId===t.id).length;
+  const hoje=agdT.filter(a=>a.data===hISO).length, mes=agdT.filter(a=>a.data.startsWith(mKey)).length;
+  const concl=agdT.filter(a=>a.data.startsWith(mKey)&&a.status==='Concluído').length;
+  const tecN=DB.tec.filter(x=>x.tenantId===t.id&&x.ativo).length;
+  const doneAll=agdT.filter(a=>a.status==='Concluído').length;
+  const rate=Math.round(100*doneAll/Math.max(1,agdT.filter(a=>['Concluído','Não Compareceu','Cancelado'].includes(a.status)).length));
+  const kpis=[['leaf','g600',agriN,'Agricultores cadastrados','+3 este mês','up'],['cal','amber',hoje,'Agendamentos hoje',hoje+' confirmados','up'],['ticket','blue',mes,'Agendamentos no mês','de '+MESES[now.getMonth()],'up'],['check','g700',concl,'Atendimentos concluídos','no mês atual','up'],['shield','clay',tecN,'Técnicos ativos','disponíveis na rede','up'],['wa','acai',rate,'% de comparecimento','histórico do tenant','up']];
+  $('kpiRow').innerHTML=kpis.map(k=>`<div class="col-sm-6 col-xl-4"><div class="panel panel-b kpi rise"><div class="ico" style="background:color-mix(in srgb,var(--${k[1]}) 14%,transparent);color:var(--${k[1]})">${ic(k[0])}</div><div><div class="num" data-v="${k[2]}">0</div><div class="lbl">${k[3]}</div><div class="delta ${k[5]}">${k[4]}</div></div></div></div>`).join('');
+  document.querySelectorAll('#kpiRow .num').forEach(el=>countUp(el,+el.dataset.v));
+  // gráficos
+  const cssv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  Chart.defaults.font.family="'IBM Plex Sans'";Chart.defaults.color=cssv('--ink-soft');
+  Object.values(S.charts).forEach(c=>c.destroy());S.charts={};
+  const hist=DB.hist[t.id];
+  $('lineTot').textContent='Σ '+hist.reduce((s,x)=>s+x.v,0)+' atendimentos';
+  S.charts.line=new Chart($('chLine'),{type:'line',data:{labels:hist.map(x=>x.l),datasets:[{data:hist.map(x=>x.v),borderColor:cssv('--g500'),backgroundColor:'rgba(47,145,89,.14)',fill:true,tension:.38,pointRadius:3,pointBackgroundColor:cssv('--amber'),borderWidth:2.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:cssv('--line-soft')}},x:{grid:{display:false}}}}});
+  const svCnt={};agdT.forEach(a=>svCnt[a.servico]=(svCnt[a.servico]||0)+1);
+  const svTop=Object.entries(svCnt).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  S.charts.bar=new Chart($('chBar'),{type:'bar',data:{labels:svTop.map(x=>x[0].length>22?x[0].slice(0,20)+'…':x[0]),datasets:[{data:svTop.map(x=>x[1]),backgroundColor:cssv('--amber'),borderRadius:6,barThickness:16}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:cssv('--line-soft')}},y:{grid:{display:false}}}}});
+  const stCnt={};STATUS.forEach(s=>stCnt[s]=0);agdT.filter(a=>a.data.startsWith(mKey)).forEach(a=>stCnt[a.status]++);
+  S.charts.donut=new Chart($('chDonut'),{type:'doughnut',data:{labels:STATUS,datasets:[{data:STATUS.map(s=>stCnt[s]),backgroundColor:['#3b78c2','#2f9159','#e0a52e','#1c5d3a','#c04434','#8a8577'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'right',labels:{boxWidth:10,usePointStyle:true,font:{size:11}}}}}});
+  // ranking comunidades
+  const cCnt={};agdT.forEach(a=>cCnt[a.comunidade]=(cCnt[a.comunidade]||0)+1);
+  const top=Object.entries(cCnt).sort((a,b)=>b[1]-a[1]).slice(0,5);const mx=top[0]?top[0][1]:1;
+  $('rankCom').innerHTML=top.map(c=>`<div class="rk"><div class="t"><b>${esc(c[0])}</b><span class="mono small-xs">${c[1]} atend.</span></div><div class="bar"><i data-w="${Math.round(100*c[1]/mx)}"></i></div></div>`).join('');
+  requestAnimationFrame(()=>document.querySelectorAll('#rankCom .bar i').forEach(i=>i.style.width=i.dataset.w+'%'));
+  $('actFeed').innerHTML=DB.audit.filter(a=>a.tenantId===t.id).slice(0,8).map(a=>`<div class="feed-it"><span class="dot" style="background:${a.tipo==='Exclusão'?'var(--danger)':a.tipo==='Inclusão'?'var(--g500)':a.tipo==='Segurança'?'var(--amber)':'var(--blue)'}"></span><div class="flex-grow-1"><span>${esc(a.user)} · <b class="mono small-xs">${esc(a.acao)}</b></span><br><small>${esc(a.reg)}</small></div><small>${new Date(a.ts).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</small></div>`).join('')||'<p class="small text-muted">Sem eventos.</p>';
+  const ups=agdT.filter(a=>a.data>=hISO&&!['Cancelado','Concluído','Não Compareceu'].includes(a.status)).sort((a,b)=>(a.data+a.hora).localeCompare(b.data+b.hora)).slice(0,6);
+  $('upList').innerHTML=ups.map(a=>`<tr style="cursor:pointer" onclick="viewAgd('${a.id}')"><td class="mono small">${a.num}</td><td>${fmtBR(a.data)}</td><td class="mono">${a.hora}</td><td><b>${esc(a.agriNome)}</b></td><td>${esc(a.servico)}</td><td>${esc(a.tecnico)}</td><td>${chipSt(a.status)}</td></tr>`).join('')||'<tr><td colspan="7" class="text-center py-4 small" style="color:var(--ink-soft)">Nenhum atendimento futuro.</td></tr>';
+}
+
+/* ------------------------- AGENDAMENTOS ------------------------- */
+function fillAgdFilters(){const t=T();$('fAStatus').innerHTML='<option value="">Status: todos</option>'+STATUS.map(s=>`<option>${s}</option>`).join('');
+  $('fAServ').innerHTML='<option value="">Serviço: todos</option>'+SERVICES.map(s=>`<option>${s}</option>`).join('');
+  $('fATec').innerHTML='<option value="">Técnico: todos</option>'+DB.tec.filter(x=>x.tenantId===t.id).map(x=>`<option>${esc(x.nome)}</option>`).join('');}
+function agdList(){const f=S.f.agd;return DB.agd.filter(a=>a.tenantId===T().id
+  &&(!f.q||(a.agriNome.toLowerCase().includes(f.q.toLowerCase())||a.num.toLowerCase().includes(f.q.toLowerCase())))
+  &&(!f.st||a.status===f.st)&&(!f.sv||a.servico===f.sv)&&(!f.tc||a.tecnico===f.tc))
+  .sort((a,b)=>(b.data+b.hora).localeCompare(a.data+a.hora))}
+function renderAgendamentos(){fillAgdFilters();const list=agdList(),per=10,pages=Math.max(1,Math.ceil(list.length/per));pg.agd=Math.min(pg.agd,pages);
+  const rows=list.slice((pg.agd-1)*per,pg.agd*per);
+  $('agdCount').textContent=`${list.length} registros · tenant ${T().sigla} · filtro demonstrativo por município`;
+  $('agdTbody').innerHTML=rows.map(a=>`<tr>
+    <td class="mono small">${a.num}</td><td>${fmtBR(a.data)}${a.data===hojeISO()?' <span class="chip st-EmAtendimento" style="font-size:.6rem">hoje</span>':''}</td><td class="mono">${a.hora}</td>
+    <td><b>${esc(a.agriNome)}</b><br><span class="small-xs" style="color:var(--ink-soft)">${ic('pin')} ${esc(a.comunidade)}</span></td>
+    <td>${esc(a.servico)}</td><td class="small">${esc(a.tecnico)}</td><td>${chipSt(a.status)}</td>
+    <td><div class="d-flex gap-1">
+      <button class="act-btn" title="Detalhes" onclick="viewAgd('${a.id}')">${ic('eye')}</button>
+      <button class="act-btn" title="Editar" onclick="editGate('agendamentos','edi',()=>openAgdModal('${a.id}'))">${ic('pen')}</button>
+      <button class="act-btn danger" title="Excluir" onclick="delAgd('${a.id}')">${ic('trash')}</button>
+    </div></td></tr>`).join('')||'<tr><td colspan="8" class="text-center py-4 small" style="color:var(--ink-soft)">Nenhum agendamento encontrado com estes filtros.</td></tr>';
+  $('agdPagInfo').textContent=`Página ${pg.agd} de ${pages} · ${list.length} registros`;
+}
+function agdPg(d){pg.agd+=d;renderAgendamentos()}
+function editGate(mod,act,fn){if(can(mod,act))fn();else denied()}
+function openAgdModal(id){
+  if(id&&!can('agendamentos','edi')){denied();return}
+  const t=T();S.editAgd=id||null;
+  $('mAgdTitle').textContent=id?'Editar agendamento':'Novo agendamento';
+  $('aAgri').innerHTML='<option value="">Selecione…</option>'+DB.agri.filter(a=>a.tenantId===t.id).sort((a,b)=>a.nome.localeCompare(b.nome)).map(a=>`<option value="${a.id}">${esc(a.nome)} · ${a.comunidade}</option>`).join('');
+  $('aServ').innerHTML='<option value="">Selecione…</option>'+t.servicos.map(s=>`<option>${s}</option>`).join('');
+  $('aTec').innerHTML='<option value="">Selecione…</option>'+DB.tec.filter(x=>x.tenantId===t.id&&x.ativo).map(x=>`<option>${esc(x.nome)}</option>`).join('');
+  $('aStatus').innerHTML=STATUS.map(s=>`<option>${s}</option>`).join('');
+  if(id){const a=DB.agd.find(x=>x.id===id);$('aAgri').value=a.agriId;$('aServ').value=a.servico;$('aTec').value=a.tecnico;$('aData').value=a.data;$('aHora').value=a.hora;$('aStatus').value=a.status;$('aObs').value=a.obs||''}
+  else{$('aAgri').value='';$('aServ').value='';$('aTec').value='';$('aData').value=hojeISO();$('aHora').value='09:00';$('aStatus').value='Agendado';$('aObs').value=''}
+  bootstrap.Modal.getOrCreateInstance($('mAgd')).show();
+}
+function saveAgd(){
+  const t=T(),agriId=$('aAgri').value,serv=$('aServ').value,tecn=$('aTec').value,data=$('aData').value,hora=$('aHora').value;
+  if(!agriId||!serv||!tecn||!data){toast('Campos obrigatórios','Agricultor, serviço, técnico e data são obrigatórios.','err');return}
+  const ag=DB.agri.find(a=>a.id===agriId);
+  if(S.editAgd){const a=DB.agd.find(x=>x.id===S.editAgd);const old=a.data;Object.assign(a,{agriId,agriNome:ag.nome,servico:serv,tecnico:tecn,data,hora,status:$('aStatus').value,obs:$('aObs').value});
+    audit('agendamento.alterado',a.num+' · '+ag.nome);
+    if(old!==data)notify(t,`Alteração de horário: ${a.num} remarcado para ${fmtBR(data)} às ${hora}.`);
+  }else{DB.gseq[t.id]=(DB.gseq[t.id]||0)+1;
+    const a={id:uid(),tenantId:t.id,num:`AGD-${new Date().getFullYear()}-${String(DB.gseq[t.id]).padStart(4,'0')}`,data,hora,agriId,agriNome:ag.nome,servico:serv,tecnico:tecn,comunidade:ag.comunidade,status:'Agendado',obs:$('aObs').value};
+    DB.agd.push(a);audit('agendamento.criado',a.num+' · '+ag.nome,'Inclusão');
+    notify(t,`Confirmação de agendamento ${a.num}: ${serv} em ${fmtBR(data)} às ${hora}.`);
+  }
+  save();bootstrap.Modal.getInstance($('mAgd')).hide();
+  if(document.querySelector('#view-agendamentos').style.display!=='none')renderAgendamentos();
+  if(document.querySelector('#view-calendario').style.display!=='none')renderCalendar();
+}
+function notify(t,msg){if(t.notif.email||t.notif.whats)toast('Notificação simulada','Nenhum e-mail ou WhatsApp foi enviado. Evento: '+msg)}
+function viewAgd(id){const a=DB.agd.find(x=>x.id===id);if(!a)return;
+  $('avNum').textContent=a.num;
+  $('avBody').innerHTML=`
+   <div class="d-flex gap-3 align-items-center mb-3"><div class="avatar lg">${esc(a.agriNome.split(' ').map(x=>x[0]).slice(0,2).join(''))}</div>
+   <div><b class="df">${esc(a.agriNome)}</b><br><span class="small" style="color:var(--ink-soft)">${ic('pin')} ${esc(a.comunidade)} · ${esc(T().nome)}</span></div>
+   <div class="ms-auto">${chipSt(a.status)}</div></div>
+   <div class="fld"><span>Serviço</span><b>${esc(a.servico)}</b></div>
+   <div class="fld"><span>Data e hora</span><b>${fmtBR(a.data)} · ${a.hora}</b></div>
+   <div class="fld"><span>Técnico(a) responsável</span><b>${esc(a.tecnico)}</b></div>
+   <div class="fld"><span>Observações</span><span class="text-end">${esc(a.obs||'—')}</span></div>
+   <div class="fld"><span>Tenant</span><span class="mono small">${T().id.toUpperCase()} · ${esc(T().nome)}</span></div>`;
+  let btns='';
+  if(can('agendamentos','edi')){
+    if(a.status==='Agendado')btns+=`<button class="btn btn-p btn-sm-x" onclick="setSt('${a.id}','Confirmado')">${ic('check')} Confirmar</button>`;
+    if(a.status==='Confirmado')btns+=`<button class="btn btn-amber btn-sm-x" onclick="setSt('${a.id}','Em Atendimento')">${ic('clock')} Iniciar atendimento</button>`;
+    if(a.status==='Em Atendimento')btns+=`<button class="btn btn-p btn-sm-x" onclick="setSt('${a.id}','Concluído')">${ic('check')} Concluir</button>`;
+    if(['Agendado','Confirmado'].includes(a.status))btns+=`<button class="btn btn-danger-soft btn-sm-x" onclick="setSt('${a.id}','Cancelado')">${ic('x')} Cancelar</button>`;
+    btns+=`<button class="btn btn-ghost btn-sm-x" onclick="bootstrap.Modal.getInstance($('mAgdV')).hide();openAgdModal('${a.id}')">${ic('pen')} Editar</button>`;
+  }
+  if(can('agendamentos','exc'))btns+=`<button class="btn btn-danger-soft btn-sm-x" onclick="delAgd('${a.id}',true)">${ic('trash')} Excluir</button>`;
+  else btns+=`<button class="btn btn-danger-soft btn-sm-x" onclick="denied()">${ic('trash')} Excluir</button>`;
+  $('avActions').innerHTML=btns;
+  bootstrap.Modal.getOrCreateInstance($('mAgdV')).show();
+}
+function setSt(id,st){const a=DB.agd.find(x=>x.id===id);a.status=st;audit('agendamento.status',a.num+' → '+st);
+  if(st==='Cancelado')notify(T(),`Cancelamento do atendimento ${a.num} (${a.servico}).`);
+  save();bootstrap.Modal.getInstance($('mAgdV')).hide();toast('Status atualizado',`${a.num} agora está "${st}".`);
+  const v=showViewSafe();}
+function showViewSafe(){if(document.querySelector('#view-agendamentos').style.display!=='none')renderAgendamentos();if(document.querySelector('#view-calendario').style.display!=='none')renderCalendar();if(document.querySelector('#view-dashboard').style.display!=='none')renderDashboard()}
+async function delAgd(id,fromModal){
+  if(!can('agendamentos','exc')){denied();return}
+  const a=DB.agd.find(x=>x.id===id);
+  if(!await askConfirm('Excluir agendamento',`Excluir definitivamente ${a.num} de ${a.agriNome}? A ação ficará registrada na auditoria.`))return;
+  if(fromModal)bootstrap.Modal.getInstance($('mAgdV')).hide();
+  DB.trash.unshift({id:uid(),tenantId:T().id,tipo:'Agendamento',label:a.num+' · '+a.agriNome,ts:new Date().toISOString(),by:S.user.nome,obj:a,colecao:'agd'});
+  DB.agd=DB.agd.filter(x=>x.id!==id);audit('agendamento.excluído',a.num,'Exclusão');save();toast('Registro excluído','Enviado para a lixeira (auditado).');showViewSafe();
+}
+
+/* ------------------------- CALENDÁRIO ------------------------- */
+function setCalView(v){S.calView=v;$('segM').classList.toggle('on',v==='month');$('segW').classList.toggle('on',v==='week');renderCalendar()}
+function calMove(d){if(S.calView==='month')S.calCur.setMonth(S.calCur.getMonth()+d);else S.calCur.setDate(S.calCur.getDate()+7*d);renderCalendar()}
+function calToday(){S.calCur=new Date();renderCalendar()}
+function renderCalendar(){
+  const t=T();$('calFTec').innerHTML='<option value="">Todos os técnicos</option>'+DB.tec.filter(x=>x.tenantId===t.id).map(x=>`<option>${esc(x.nome)}</option>`).join('');
+  $('calFServ').innerHTML='<option value="">Todos os serviços</option>'+t.servicos.map(s=>`<option>${s}</option>`).join('');
+  $('calLegend').innerHTML=['Agendado','Confirmado','Em Atendimento','Concluído','Cancelado'].map(s=>`<span><i style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${{Agendado:'var(--blue)',Confirmado:'var(--g600)','Em Atendimento':'var(--amber)',Concluído:'var(--ok)',Cancelado:'var(--danger)'}[s]};margin-right:4px"></i>${s}</span>`).join('');
+  const fTec=$('calFTec').value,fServ=$('calFServ').value;
+  const agdF=DB.agd.filter(a=>a.tenantId===t.id&&(!fTec||a.tecnico===fTec)&&(!fServ||a.servico===fServ));
+  const byDate={};agdF.forEach(a=>{(byDate[a.data]=byDate[a.data]||[]).push(a)});
+  Object.values(byDate).forEach(l=>l.sort((a,b)=>a.hora.localeCompare(b.hora)));
+  const c=S.calCur,hISO=hojeISO();let html='',count=0;
+  const head=['DOM','SEG','TER','QUA','QUI','SEX','SÁB'].map(d=>`<div class="cal-h">${d}</div>`).join('');
+  if(S.calView==='month'){
+    $('calLabel').textContent=MESES[c.getMonth()]+' de '+c.getFullYear();
+    const first=new Date(c.getFullYear(),c.getMonth(),1),off=first.getDay();
+    for(let i=0;i<42;i++){const d=new Date(c.getFullYear(),c.getMonth(),1-off+i),k=iso(d),dim=d.getMonth()!==c.getMonth(),evs=byDate[k]||[];count+=dim?0:evs.length;
+      html+=`<div class="cal-cell ${dim?'dim':''} ${k===hISO?'today':''}" data-d="${k}" onclick="cellClick(event,'${k}')" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropEvt(event,'${k}',this)">
+        <span class="dnum">${d.getDate()}</span>`+
+        evs.slice(0,3).map(e=>`<div class="evt ${stCls(e.status)}" draggable="${can('agendamentos','edi')}" ondragstart="event.dataTransfer.setData('text/plain','${e.id}')" onclick="event.stopPropagation();viewAgd('${e.id}')" title="${e.hora} ${esc(e.agriNome)}"><b>${e.hora}</b> ${esc(e.agriNome.split(' ')[0])} · ${esc(e.servico)}</div>`).join('')+
+        (evs.length>3?`<div class="cal-more">+${evs.length-3} mais…</div>`:'')+'</div>'}
+  }else{
+    const ws=new Date(c);ws.setDate(c.getDate()-c.getDay());
+    $('calLabel').textContent=`Semana de ${pad(ws.getDate())} ${MESES[ws.getMonth()].slice(0,3)} a ${pad(ws.getDate()+6)} ${MESES[ws.getMonth()].slice(0,3)}`;
+    for(let i=0;i<7;i++){const d=new Date(ws);d.setDate(ws.getDate()+i);const k=iso(d),evs=byDate[k]||[];count+=evs.length;
+      html+=`<div class="cal-cell ${k===hISO?'today':''}" style="min-height:280px" data-d="${k}" onclick="cellClick(event,'${k}')" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropEvt(event,'${k}',this)">
+        <span class="dnum">${d.getDate()} ${MESES_C[d.getMonth()]}</span>`+
+        evs.map(e=>`<div class="evt ${stCls(e.status)}" draggable="${can('agendamentos','edi')}" ondragstart="event.dataTransfer.setData('text/plain','${e.id}')" onclick="event.stopPropagation();viewAgd('${e.id}')"><b>${e.hora}</b> ${esc(e.agriNome)}<br>${esc(e.servico)} · ${esc(e.tecnico.split(' ')[0])}</div>`).join('')+'</div>'}
+  }
+  $('calGrid').innerHTML=head+html;
+  $('calCount').textContent=`${count} atendimentos no período · arraste para reagendar`;
+}
+function cellClick(ev,d){if(ev.target.closest('.evt'))return;openAgdModal();$('aData').value=d}
+function dropEvt(ev,k,cell){ev.preventDefault();cell.classList.remove('drag-over');const id=ev.dataTransfer.getData('text/plain');const a=DB.agd.find(x=>x.id===id);if(!a||!can('agendamentos','edi'))return;
+  if(a.data===k)return;a.data=k;audit('agendamento.reagendado',a.num+' → '+fmtBR(k));save();renderCalendar();
+  toast('Reagendado',`${a.num} movido para ${fmtBR(k)}. Nenhuma comunicação externa foi enviada.`);}
+
+/* ------------------------- AGRICULTORES ------------------------- */
+function fillAgriFilters(){$('fRcom').innerHTML='<option value="">Comunidade: todas</option>'+DB.coms.filter(c=>c.tenantId===T().id).map(c=>`<option>${esc(c.nome)}</option>`).join('')}
+function agriList(){const f=S.f.agri;return DB.agri.filter(a=>a.tenantId===T().id&&(!f.q||a.nome.toLowerCase().includes(f.q.toLowerCase())||a.cpf.includes(f.q))&&(!f.com||a.comunidade===f.com)).sort((a,b)=>a.nome.localeCompare(b.nome))}
+function renderAgricultores(){fillAgriFilters();const list=agriList(),per=9,pages=Math.max(1,Math.ceil(list.length/per));pg.agri=Math.min(pg.agri,pages);
+  const rows=list.slice((pg.agri-1)*per,pg.agri*per);
+  $('agriCount').textContent=`${list.length} agricultores familiares · ${DB.coms.filter(c=>c.tenantId===T().id).length} comunidades atendidas`;
+  $('agriTbody').innerHTML=rows.map(a=>`<tr>
+    <td><div class="d-flex align-items-center gap-2"><div class="avatar" style="width:32px;height:32px;font-size:.7rem;border-radius:9px;background:${a.familiar?'var(--g600)':'var(--clay)'}">${esc(a.nome.split(' ').map(x=>x[0]).slice(0,2).join(''))}</div><div><b>${esc(a.nome)}</b><br><span class="small-xs" style="color:var(--ink-soft)">${esc(a.cultura)} · ${esc(a.area)} ha</span></div></div></td>
+    <td class="mono small">${esc(a.cpf)}</td><td class="small">${esc(a.comunidade)}</td><td class="small">${esc(a.cultura)}</td>
+    <td class="mono small">${esc(a.tel)}</td>
+    <td>${a.dap?`<span class="chip ${a.dapOk?'st-Confirmado':'st-Cancelado'}"><i></i>${a.dapOk?'Válida':'Vencida'}</span>`:'<span class="chip st-NaoCompareceu"><i></i>Sem CAF</span>'}</td>
+    <td><div class="d-flex gap-1">
+      <button class="act-btn" title="Ficha completa" onclick="openAgriDrawer('${a.id}')">${ic('eye')}</button>
+      <button class="act-btn" title="Editar" onclick="editGate('cadastros','edi',()=>openAgriModal('${a.id}'))">${ic('pen')}</button>
+      <button class="act-btn danger" title="Excluir" onclick="delAgri('${a.id}')">${ic('trash')}</button></div></td></tr>`).join('')||'<tr><td colspan="7" class="text-center py-4 small" style="color:var(--ink-soft)">Nenhum agricultor encontrado.</td></tr>';
+  $('agriPagInfo').textContent=`Página ${pg.agri} de ${pages} · ${list.length} cadastros`;
+}
+function agriPg(d){pg.agri+=d;renderAgricultores()}
+function openAgriDrawer(id){const a=DB.agri.find(x=>x.id===id);if(!a)return;
+  const agdH=DB.agd.filter(g=>g.tenantId===T().id&&g.agriId===id).sort((x,y)=>(y.data+y.hora).localeCompare(x.data+x.hora));
+  $('drwBody').innerHTML=`
+  <div class="p-4 noise" style="background:var(--g900);color:#f0eee0">
+    <div class="d-flex justify-content-between"><span class="kicker" style="color:var(--amber)">Ficha rural · ${a.id.toUpperCase()}</span>
+    <button class="icon-btn" style="border-color:rgba(255,255,255,.2);color:#fff;background:transparent" data-bs-dismiss="offcanvas">${ic('x')}</button></div>
+    <div class="d-flex gap-3 align-items-center mt-3"><div class="avatar lg">${esc(a.nome.split(' ').map(x=>x[0]).slice(0,2).join(''))}</div>
+    <div><b class="df" style="font-size:1.15rem">${esc(a.nome)}</b><br><span class="small" style="color:#b9c7b3">${ic('pin')} ${esc(a.comunidade)} · ${esc(T().nome)}</span></div></div>
+    <div class="d-flex gap-2 mt-3 flex-wrap">
+      ${a.familiar?'<span class="chip st-Confirmado"><i></i>Agricultura familiar</span>':''}
+      ${a.dap?`<span class="chip ${a.dapOk?'st-Confirmado':'st-Cancelado'}"><i></i>CAF ${a.dapOk?'válida':'vencida'}</span>`:'<span class="chip st-NaoCompareceu"><i></i>Sem CAF</span>'}
+      ${a.coop?`<span class="chip st-Agendado"><i></i>Cooperado(a)</span>`:''}
+    </div>
+    <div class="d-flex gap-2 mt-3">
+      <button class="btn btn-amber btn-sm-x" onclick="bootstrap.Offcanvas.getInstance($('drwAgri')).hide();openAgdModal();setTimeout(()=>{$('aAgri').value='${a.id}'},120)">${ic('plus')} Agendar serviço</button>
+      <button class="btn btn-sm-x" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.25)" onclick="editGate('cadastros','edi',()=>{bootstrap.Offcanvas.getInstance($('drwAgri')).hide();openAgriModal('${a.id}')})">${ic('pen')} Editar</button>
+    </div></div>
+  <ul class="nav nav-pills nav-fill gap-1 p-3 pb-0" role="tablist">
+    ${['Pessoais','Endereço','Produção','Documentos'].map((tb,i)=>`<li class="nav-item"><button class="btn btn-sm-x w-100 ${i===0?'btn-p':'btn-ghost'}" data-bs-toggle="tab" data-bs-target="#dt${i}" onclick="this.closest('.nav').querySelectorAll('button').forEach(b=>{b.className=b.className.replace('btn-p','btn-ghost')});this.classList.replace('btn-ghost','btn-p')">${tb}</button></li>`).join('')}
+  </ul>
+  <div class="tab-content p-4 pt-3">
+    <div class="tab-pane fade show active" id="dt0">
+      ${fld('Nome completo',a.nome)}${fld('CPF',a.cpf)}${fld('RG',a.rg)}${fld('NIS',a.nis)}${fld('Nascimento',fmtBR(a.nasc))}${fld('Sexo',a.sexo)}${fld('Estado civil',a.eciv)}${fld('Telefone',a.tel)}${fld('WhatsApp',a.whats||'—')}${fld('E-mail',a.email||'—')}
+    </div>
+    <div class="tab-pane fade" id="dt1">
+      ${fld('Município',T().nome)}${fld('Comunidade',a.comunidade)}${fld('Ramal',a.ramal||'—')}${fld('Bairro',a.bairro||'Zona rural')}${fld('Rua / Vila',a.rua||'—')}${fld('Número',a.num||'S/N')}${fld('Coordenadas GPS',a.gps||'Não georreferenciado')}
+    </div>
+    <div class="tab-pane fade" id="dt2">
+      ${fld('Cultura principal',a.cultura)}${fld('Área plantada',a.area+' ha')}${fld('Produção estimada',a.prod+' t/ano')}${fld('Tipo de produção',a.tipo)}${fld('Cooperativa',a.coop||'Não vinculado(a)')}
+      <h6 class="small fw-bold mt-4 mb-2">Histórico de atendimentos (${agdH.length})</h6>
+      ${agdH.slice(0,5).map(g=>`<div class="feed-it"><span class="dot" style="background:var(--g500)"></span><div class="flex-grow-1"><b class="small">${g.num}</b> · ${esc(g.servico)}<br><small>${fmtBR(g.data)} ${g.hora} · ${esc(g.tecnico)}</small></div>${chipSt(g.status)}</div>`).join('')||'<p class="small" style="color:var(--ink-soft)">Sem atendimentos registrados.</p>'}
+    </div>
+    <div class="tab-pane fade" id="dt3">
+      ${['RG.pdf','CPF.pdf','CAF.pdf','Comprovante de Residência.jpg','Foto da propriedade 01.jpg'].map((d,i)=>`<div class="d-flex align-items-center gap-2 pcell"><span style="color:var(--g600)">${ic('file')}</span><b class="flex-grow-1">${d}</b><span class="mono small-xs" style="color:var(--ink-soft)">${(ri(120,890))} KB</span><button class="act-btn">${ic('down')}</button></div>`).join('')}
+      <button class="btn btn-ghost btn-sm-x mt-3">${ic('plus')} Anexar documento</button>
+    </div>
+  </div>`;
+  bootstrap.Offcanvas.getOrCreateInstance($('drwAgri')).show();
+}
+function fld(l,v){return `<div class="fld"><span>${esc(l)}</span><b class="text-end">${esc(v)}</b></div>`}
+function openAgriModal(id){
+  if(id&&!can('cadastros','edi')){denied();return}
+  S.editAgri=id||null;const t=T();
+  $('mAgriTitle').textContent=id?'Editar agricultor':'Novo agricultor';
+  $('rCom').innerHTML=DB.coms.filter(c=>c.tenantId===t.id).map(c=>`<option>${esc(c.nome)}</option>`).join('');
+  $('rCult').innerHTML=CROPS.map(c=>`<option>${c}</option>`).join('');
+  $('rCoop').innerHTML='<option value="">Nenhuma</option>'+DB.ent.filter(e=>e.tenantId===t.id).map(e=>`<option>${esc(e.nome)}</option>`).join('');
+  $('rMun').value=t.nome;
+  $('rDocs').innerHTML=['RG','CPF','CAF','Comprovante','Fotos'].map(d=>`<span class="chip st-Agendado">${ic('file')} ${d} · pendente</span>`).join('');
+  const ids=['rNome','rCpf','rRg','rNis','rDap','rNasc','rTel','rWhats','rEmail','rCep','rRamal','rBairro','rRua','rNum','rGps','rArea','rProd'];
+  ids.forEach(i=>$(i).value='');$('rSexo').value='Feminino';$('rECiv').value='Solteiro(a)';$('rTipo').value='Mista';$('rFam').checked=true;
+  if(id){const a=DB.agri.find(x=>x.id===id);
+    $('rNome').value=a.nome;$('rCpf').value=a.cpf;$('rRg').value=a.rg;$('rNis').value=a.nis;$('rDap').value=a.dap;$('rNasc').value=a.nasc;
+    $('rSexo').value=a.sexo;$('rECiv').value=a.eciv;$('rTel').value=a.tel;$('rWhats').value=a.whats;$('rEmail').value=a.email||'';
+    $('rCom').value=a.comunidade;$('rRamal').value=a.ramal;$('rBairro').value=a.bairro||'';$('rRua').value=a.rua||'';$('rNum').value=a.num||'';$('rGps').value=a.gps||'';
+    $('rCult').value=a.cultura;$('rArea').value=a.area;$('rProd').value=a.prod;$('rTipo').value=a.tipo;$('rFam').checked=a.familiar;$('rCoop').value=a.coop;
+  }
+  bootstrap.Modal.getOrCreateInstance($('mAgri')).show();
+}
+function saveAgri(){
+  const nome=$('rNome').value.trim(),cpf=$('rCpf').value.trim();
+  if(!nome||!cpf){toast('Campos obrigatórios','Nome completo e CPF são obrigatórios.','err');return}
+  const data={nome,cpf,rg:$('rRg').value,nis:$('rNis').value,dap:$('rDap').value,dapOk:!!$('rDap').value,nasc:$('rNasc').value||'1970-01-01',sexo:$('rSexo').value,eciv:$('rECiv').value,tel:$('rTel').value,whats:$('rWhats').value,email:$('rEmail').value,comunidade:$('rCom').value,ramal:$('rRamal').value,bairro:$('rBairro').value,rua:$('rRua').value,num:$('rNum').value,gps:$('rGps').value,cultura:$('rCult').value,area:+$('rArea').value||0,prod:+$('rProd').value||0,tipo:$('rTipo').value,familiar:$('rFam').checked,coop:$('rCoop').value};
+  if(S.editAgri){const a=DB.agri.find(x=>x.id===S.editAgri);Object.assign(a,data);audit('agricultor.alterado',nome)}
+  else{DB.agri.push(Object.assign({id:uid(),tenantId:T().id},data));audit('agricultor.criado',nome,'Inclusão')}
+  save();bootstrap.Modal.getInstance($('mAgri')).hide();toast('Cadastro salvo',nome+(S.editAgri?' atualizado com sucesso.':' incluído no cadastro rural.'));renderAgricultores();
+}
+async function delAgri(id){
+  if(!can('cadastros','exc')){denied();return}
+  const a=DB.agri.find(x=>x.id===id);
+  if(!await askConfirm('Excluir agricultor',`Excluir ${a.nome} e vinculá-lo à lixeira auditada?`))return;
+  DB.trash.unshift({id:uid(),tenantId:T().id,tipo:'Agricultor',label:a.nome+' · '+a.cpf,ts:new Date().toISOString(),by:S.user.nome,obj:a,colecao:'agri'});
+  DB.agri=DB.agri.filter(x=>x.id!==id);audit('agricultor.excluído',a.nome,'Exclusão');save();toast('Cadastro excluído','Registrado na auditoria e disponível na lixeira.');renderAgricultores();
+}
+
+/* ------------------------- CADASTROS AUXILIARES ------------------------- */
+function cadTab(btn,id){btn.closest('.seg').querySelectorAll('button').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
+  ['tabTec','tabCom','tabEnt','tabFrota'].forEach(p=>$(p).style.display=p===id?'block':'none');renderCadastros()}
+function renderCadastros(){const t=T();
+  $('tTec').innerHTML=DB.tec.filter(x=>x.tenantId===t.id).map(x=>`<tr><td><b>${esc(x.nome)}</b></td><td>${esc(x.funcao)}</td><td class="mono small">${esc(x.registro)}</td><td>${x.ativo?'<span class="chip st-Confirmado"><i></i>Ativo</span>':'<span class="chip st-Cancelado"><i></i>Inativo</span>'}</td></tr>`).join('');
+  const comAgd={};DB.agd.filter(a=>a.tenantId===t.id).forEach(a=>comAgd[a.comunidade]=(comAgd[a.comunidade]||0)+1);
+  $('tCom').innerHTML=DB.coms.filter(c=>c.tenantId===t.id).map(c=>{const nA=DB.agri.filter(a=>a.tenantId===t.id&&a.comunidade===c.nome).length;
+    return `<tr><td><b>${ic('pin')} ${esc(c.nome)}</b></td><td>${nA}</td><td>${comAgd[c.nome]||0}</td></tr>`}).join('');
+  $('tEnt').innerHTML=DB.ent.filter(e=>e.tenantId===t.id).map(e=>`<tr><td><b>${esc(e.nome)}</b></td><td><span class="chip ${e.tipo==='Cooperativa'?'st-Agendado':'st-EmAtendimento'}"><i></i>${e.tipo}</span></td><td>${esc(e.pres)}</td><td>${e.mem}</td></tr>`).join('');
+  $('tFrota').innerHTML=DB.frota.filter(f=>f.tenantId===t.id).map(f=>`<tr><td><b>${ic(f.cat==='Máquina agrícola'?'gear':'truck')} ${esc(f.nome)}</b></td><td>${f.cat}</td><td class="mono small">${esc(f.placa)}</td><td>${f.st==='Disponível'||f.st==='Operacional'?'<span class="chip st-Confirmado"><i></i>'+f.st+'</span>':'<span class="chip st-Cancelado"><i></i>'+f.st+'</span>'}</td></tr>`).join('');
+}
+const ENT_CFG={tec:{t:'Novo técnico',f:[['nome','Nome completo'],['funcao','Função'],['registro','Registro profissional']]},com:{t:'Nova comunidade',f:[['nome','Nome da comunidade']]},ent:{t:'Nova organização rural',f:[['nome','Nome'],['tipo','Tipo (Associação/Cooperativa)'],['pres','Presidente'],['mem','Nº de associados']]},frota:{t:'Novo item de frota',f:[['nome','Identificação'],['cat','Categoria'],['placa','Placa / Horas de uso']]}};
+function openEnt(type){if(!can('cadastros','ins')){denied();return}
+  S.entType=type;const c=ENT_CFG[type];$('eTitle').textContent=c.t;
+  $('eFields').innerHTML=c.f.map(f=>`<div class="col-12"><label class="form-label">${f[1]}</label><input class="form-control" id="e_${f[0]}"></div>`).join('');
+  bootstrap.Modal.getOrCreateInstance($('mEnt')).show();}
+function saveEnt(){const c=ENT_CFG[S.entType],vals={};c.f.forEach(f=>vals[f[0]]=$('e_'+f[0]).value.trim());
+  if(!vals.nome){toast('Obrigatório','Preencha o nome.','err');return}
+  const t=T().id;
+  if(S.entType==='tec')DB.tec.push({id:uid(),tenantId:t,nome:vals.nome,funcao:vals.funcao,registro:vals.registro,ativo:true});
+  if(S.entType==='com')DB.coms.push({id:uid(),tenantId:t,nome:vals.nome});
+  if(S.entType==='ent')DB.ent.push({id:uid(),tenantId:t,nome:vals.nome,tipo:vals.tipo,pres:vals.pres,mem:+vals.mem||0});
+  if(S.entType==='frota')DB.frota.push({id:uid(),tenantId:t,nome:vals.nome,cat:vals.cat,placa:vals.placa,st:'Disponível'});
+  audit('cadastro.incluído',c.t.replace('Novo','').replace('Nova','').trim()+': '+vals.nome,'Inclusão');save();
+  bootstrap.Modal.getInstance($('mEnt')).hide();toast('Registro incluído',vals.nome+' adicionado com sucesso.');renderCadastros();
+}
+
+/* ------------------------- RELATÓRIOS ------------------------- */
+const REPS=[
+ ['agricultores','leaf','Agricultores por comunidade','Distribuição do cadastro rural por comunidade e ramal.'],
+ ['cultura','leaf','Agricultores por cultura agrícola','Perfil produtivo: mandioca, pimenta-do-reino, açaí e demais culturas.'],
+ ['periodo','cal','Agendamentos por período','Movimento de atendimentos no intervalo selecionado.'],
+ ['tecnico','shield','Agendamentos por técnico','Carga de trabalho individual do corpo técnico.'],
+ ['servico','ticket','Agendamentos por serviço','Demanda por tipo de serviço ofertado pela Secretaria.'],
+ ['prod','chart','Produtividade','Atendimentos realizados × pendentes por técnico.']];
+function renderRelatorios(){
+  $('repCards').innerHTML=REPS.map((r,i)=>`<div class="col-md-6 col-xl-4"><div class="panel panel-b rep-card h-100 rise" style="animation-delay:${i*60}ms">
+    <div class="d-flex align-items-center gap-2 mb-2"><span style="color:var(--g600)">${ic(r[1])}</span><b class="df small">${r[2]}</b></div>
+    <p class="small mb-3" style="color:var(--ink-soft)">${r[3]}</p>
+    <div class="d-flex gap-2"><button class="btn btn-p btn-sm-x" onclick="genRep('${r[0]}')">Gerar</button>
+    <button class="btn btn-ghost btn-sm-x" ${can('relatorios','pdf')?`onclick="genRep('${r[0]}',1)"`:'onclick="denied()"'}>${ic('print')} PDF</button>
+    <button class="btn btn-ghost btn-sm-x" ${can('relatorios','xls')?`onclick="genRep('${r[0]}',2)"`:'onclick="denied()"'}>${ic('down')} Excel</button></div>
+  </div></div>`).join('');
+}
+function repData(kind){const t=T(),mKey=hojeISO().slice(0,7);
+  const grp=(arr,key)=>{const m={};arr.forEach(x=>m[x[key]]=(m[x[key]]||0)+1);return Object.entries(m).sort((a,b)=>b[1]-a[1])};
+  if(kind==='agricultores')return{title:'Agricultores por comunidade — '+t.nome,h:['Comunidade','Agricultores','%'],rows:grp(DB.agri.filter(a=>a.tenantId===t.id),'comunidade').map(r=>[r[0],r[1],Math.round(100*r[1]/DB.agri.filter(a=>a.tenantId===t.id).length)+'%'])};
+  if(kind==='cultura')return{title:'Agricultores por cultura agrícola — '+t.nome,h:['Cultura','Agricultores','Área média (ha)'],rows:grp(DB.agri.filter(a=>a.tenantId===t.id),'cultura').map(r=>{const arr=DB.agri.filter(a=>a.tenantId===t.id&&a.cultura===r[0]);return[r[0],r[1],(arr.reduce((s,a)=>s+a.area,0)/arr.length).toFixed(1)]})};
+  if(kind==='periodo')return{title:'Agendamentos do mês corrente — '+t.nome,h:['Nº','Data','Hora','Agricultor','Serviço','Status'],rows:DB.agd.filter(a=>a.tenantId===t.id&&a.data.startsWith(mKey)).sort((a,b)=>a.data.localeCompare(b.data)).map(a=>[a.num,fmtBR(a.data),a.hora,a.agriNome,a.servico,a.status])};
+  if(kind==='tecnico')return{title:'Agendamentos por técnico — '+t.nome,h:['Técnico(a)','Total','Concluídos','Taxa'],rows:grp(DB.agd.filter(a=>a.tenantId===t.id),'tecnico').map(r=>{const arr=DB.agd.filter(a=>a.tenantId===t.id&&a.tecnico===r[0]);const c=arr.filter(a=>a.status==='Concluído').length;return[r[0],r[1],c,Math.round(100*c/arr.length)+'%']})};
+  if(kind==='servico')return{title:'Agendamentos por serviço — '+t.nome,h:['Serviço','Quantidade','Participação'],rows:grp(DB.agd.filter(a=>a.tenantId===t.id),'servico').map(r=>[r[0],r[1],Math.round(100*r[1]/DB.agd.filter(a=>a.tenantId===t.id).length)+'%'])};
+  return{title:'Produtividade técnica — '+t.nome,h:['Técnico(a)','Realizados','Pendentes','Cancelados'],rows:DB.tec.filter(x=>x.tenantId===t.id).map(x=>{const arr=DB.agd.filter(a=>a.tenantId===t.id&&a.tecnico===x.nome);return[x.nome,arr.filter(a=>a.status==='Concluído').length,arr.filter(a=>['Agendado','Confirmado','Em Atendimento'].includes(a.status)).length,arr.filter(a=>a.status==='Cancelado').length]})};
+}
+function genRep(kind,mode){S.rep=repData(kind);
+  $('repPanel').style.display='block';$('repTitle').textContent=S.rep.title;
+  $('repBody').innerHTML=`<table class="tbl"><thead><tr>${S.rep.h.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${S.rep.rows.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  if(mode===1)repPrint();if(mode===2)repExportCSV();
+  $('repPanel').scrollIntoView({behavior:REDUCED?'auto':'smooth',block:'nearest'});
+}
+function repExportCSV(){if(!S.rep)return;if(!can('relatorios','xls')){denied();return}
+  const csv=[S.rep.h,...S.rep.rows].map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(';')).join('\n');
+  dlBlob('\uFEFF'+csv,'text/csv;charset=utf-8','relatorio-siga.csv');toast('Excel gerado','Download iniciado (CSV compatível com Excel).');audit('relatorio.exportado','Excel: '+S.rep.title)}
+function repPrint(){if(!S.rep)return;if(!can('relatorios','pdf')){denied();return}
+  $('printArea').innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #0c2016;padding-bottom:10px"><div><h1>SIGA PARÁ · ${esc(T().nome)}</h1><span style="font-size:11px;color:#555">Secretaria Municipal de Agricultura · Documento oficial</span></div><div style="text-align:right;font-size:10px;color:#555">Emitido em ${new Date().toLocaleString('pt-BR')}<br>por ${esc(S.user.nome)}</div></div>
+  <h2 style="font-size:15px;margin-top:18px">${esc(S.rep.title)}</h2>
+  <table><thead><tr>${S.rep.h.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${S.rep.rows.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>
+  <p style="font-size:9px;color:#777;margin-top:20px">SIGA Pará · Protótipo de demonstração · Dados locais deste navegador · Município ${esc(T().nome)}</p>`;
+  audit('relatorio.exportado','PDF: '+S.rep.title);window.print();
+}
+function dlBlob(content,type,name){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),3000)}
+function exportAgdCSV(){if(!can('relatorios','xls')){denied();return}
+  const rows=agdList().map(a=>[a.num,fmtBR(a.data),a.hora,a.agriNome,a.servico,a.tecnico,a.comunidade,a.status]);
+  const csv=[['Nº','Data','Hora','Agricultor','Serviço','Técnico','Comunidade','Status'],...rows].map(r=>r.map(c=>`"${c}"`).join(';')).join('\n');
+  dlBlob('\uFEFF'+csv,'text/csv;charset=utf-8','agendamentos-'+T().sigla+'.csv');toast('Excel gerado',rows.length+' agendamentos exportados.')}
+function exportAgriCSV(){if(!can('relatorios','xls')){denied();return}
+  const rows=agriList().map(a=>[a.nome,a.cpf,a.nis,a.dap,a.comunidade,a.cultura,a.area,a.tel]);
+  const csv=[['Nome','CPF','NIS','DAP/CAF','Comunidade','Cultura','Área (ha)','Telefone'],...rows].map(r=>r.map(c=>`"${c}"`).join(';')).join('\n');
+  dlBlob('\uFEFF'+csv,'text/csv;charset=utf-8','agricultores-'+T().sigla+'.csv');toast('Excel gerado',rows.length+' agricultores exportados.')}
+
+/* ------------------------- USUÁRIOS ------------------------- */
+function renderUsuarios(){const t=T();
+  $('usTbody').innerHTML=DB.users.filter(u=>u.tenantId===t.id).map(u=>{
+    const pn=Object.values(u.perms||{}).flatMap(m=>Object.values(m)).filter(Boolean).length;
+    return `<tr><td><div class="d-flex align-items-center gap-2"><div class="avatar" style="width:32px;height:32px;font-size:.7rem;border-radius:9px">${u.nome.split(' ').map(x=>x[0]).slice(0,2).join('')}</div><b>${esc(u.nome)}</b></div></td>
+    <td class="mono small">${u.email}</td>
+    <td><span class="chip role-${u.role}"><i></i>${u.role==='admin'?'Administrador':'Usuário comum'}</span></td>
+    <td><button class="btn btn-ghost btn-sm-x" onclick="openPerms('${u.id}')">${ic('shield')} ${pn} permissões</button></td>
+    <td>${u.ativo?'<span class="chip st-Confirmado"><i></i>Ativo</span>':'<span class="chip st-Cancelado"><i></i>Desativado</span>'}</td>
+    <td><div class="d-flex gap-1">
+      <button class="act-btn" title="Permissões" onclick="openPerms('${u.id}')">${ic('shield')}</button>
+      <button class="act-btn" title="${u.ativo?'Desativar':'Ativar'}" onclick="toggleUser('${u.id}')">${ic(u.ativo?'x':'check')}</button>
+      <button class="act-btn danger" title="Excluir" onclick="delUser('${u.id}')">${ic('trash')}</button></div></td></tr>`}).join('');
+}
+function openUserModal(){S.editUser=null;$('mUserTitle').textContent='Novo usuário';['uNome','uEmail','uSenha'].forEach(i=>$(i).value='');$('uPapel').value='user';$('uAtivo').checked=true;bootstrap.Modal.getOrCreateInstance($('mUser')).show()}
+function saveUser(){const nome=$('uNome').value.trim(),email=$('uEmail').value.trim(),senha=$('uSenha').value;
+  if(!nome||!email){toast('Obrigatório','Nome e e-mail são obrigatórios.','err');return}
+  if(senha.length<8){toast('Senha fraca','A senha de demonstração deve ter no mínimo 8 caracteres. Não reutilize uma senha real: ela não é criptografada.','err');return}
+  if(DB.users.some(u=>u.email.toLowerCase()===email.toLowerCase())){toast('E-mail já cadastrado','Já existe um usuário com este e-mail na plataforma.','err');return}
+  const papel=$('uPapel').value;
+  const perms={cadastros:{ver:1,ins:1,edi:1,exc:papel==='admin'?1:0},agendamentos:{ver:1,ins:1,edi:papel==='admin'?1:0,exc:papel==='admin'?1:0},relatorios:{ver:1,pdf:papel==='admin'?1:0,xls:papel==='admin'?1:0},config:{ver:papel==='admin'?1:0,edi:papel==='admin'?1:0}};
+  DB.users.push({id:uid(),tenantId:T().id,nome,email,senha,role:papel,ativo:$('uAtivo').checked,perms});
+  audit('usuario.criado',nome+' ('+email+')','Inclusão');save();bootstrap.Modal.getInstance($('mUser')).hide();
+  toast('Usuário criado',nome+' recebeu perfil '+ (papel==='admin'?'Administrador Municipal':'Usuário Comum')+'.');renderUsuarios();}
+function toggleUser(id){const u=DB.users.find(x=>x.id===id);u.ativo=!u.ativo;
+  audit(u.ativo?'usuario.ativado':'usuario.desativado',u.nome,'Configuração');save();
+  toast('Situação atualizada',u.nome+(u.ativo?' foi ativado.':' foi desativado — acesso bloqueado.'));renderUsuarios()}
+async function delUser(id){const u=DB.users.find(x=>x.id===id);
+  if(u.id===S.user.id){toast('Ação inválida','Você não pode excluir o próprio usuário.','err');return}
+  if(!await askConfirm('Excluir usuário',`Remover definitivamente ${u.nome}?`))return;
+  DB.users=DB.users.filter(x=>x.id!==id);audit('usuario.excluído',u.nome,'Exclusão');save();renderUsuarios();toast('Usuário excluído','Acesso revogado e auditado.')}
+const PERM_ROWS=[['cadastros','Módulo de Cadastros',[['ver','Visualizar'],['ins','Inserir'],['edi','Editar'],['exc','Excluir']]],['agendamentos','Módulo de Agendamentos',[['ver','Visualizar'],['ins','Inserir'],['edi','Editar'],['exc','Excluir']]],['relatorios','Módulo de Relatórios',[['ver','Visualizar'],['pdf','Exportar PDF'],['xls','Exportar Excel']]],['config','Módulo de Configurações',[['ver','Visualizar'],['edi','Editar']]]];
+function openPerms(id){S.permUser=id;const u=DB.users.find(x=>x.id===id);$('pName').textContent=u.nome;
+  const lock=u.role==='admin';
+  $('pGrid').innerHTML=(lock?'<div class="alert py-2 small mb-3" style="background:var(--amber-soft);border:1px solid var(--amber);color:var(--ink)">Administradores municipais possuem permissão total por definição do sistema.</div>':'')+
+  `<table class="tbl"><thead><tr><th>Módulo</th>${['Visualizar','Inserir','Editar','Excluir','PDF','Excel'].map(h=>`<th class="text-center">${h}</th>`).join('')}</tr></thead><tbody>`+
+  PERM_ROWS.map(r=>`<tr><td><b class="small">${r[1]}</b><br><span class="perm-h">${r[0]}</span></td>${['ver','ins','edi','exc','pdf','xls'].map(a=>{const it=r[2].find(x=>x[0]===a);
+    return `<td class="text-center">${it?`<input type="checkbox" class="form-check-input" data-m="${r[0]}" data-a="${a}" ${u.perms?.[r[0]]?.[a]?'checked':''} ${lock?'disabled':''}>`:'<span style="color:var(--line)">—</span>'}</td>`}).join('')}</tr>`).join('')+'</tbody></table>';
+  bootstrap.Modal.getOrCreateInstance($('mPerms')).show();}
+function savePerms(){const u=DB.users.find(x=>x.id===S.permUser);if(u.role!=='admin'){
+    u.perms=u.perms||{};document.querySelectorAll('#pGrid input[type=checkbox]').forEach(cb=>{u.perms[cb.dataset.m]=u.perms[cb.dataset.m]||{};u.perms[cb.dataset.m][cb.dataset.a]=cb.checked?1:0})}
+  audit('permissoes.alteradas','Matriz de '+u.nome,'Configuração');save();bootstrap.Modal.getInstance($('mPerms')).hide();
+  toast('Permissões aplicadas','A matriz de '+u.nome+' foi atualizada e auditada.');renderUsuarios()}
+
+/* ------------------------- AUDITORIA ------------------------- */
+function audTab(btn,id){btn.closest('.seg').querySelectorAll('button').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
+  $('audPaneLog').style.display=id==='audPaneLog'?'block':'none';$('audPaneTrash').style.display=id==='audPaneTrash'?'block':'none';renderAuditoria()}
+function renderAuditoria(){const f=S.f.aud;
+  const list=DB.audit.filter(a=>a.tenantId===T().id&&(!f.q||(a.user+a.acao+a.reg).toLowerCase().includes(f.q.toLowerCase()))&&(!f.tp||a.tipo===f.tp)).slice(0,80);
+  $('audCount').textContent=list.length+' eventos';
+  $('audTbody').innerHTML=list.map(a=>`<tr><td class="mono small" style="white-space:nowrap">${new Date(a.ts).toLocaleString('pt-BR')}</td><td><b>${esc(a.user)}</b></td><td><span class="chip ${a.tipo==='Exclusão'?'st-Cancelado':a.tipo==='Inclusão'?'st-Confirmado':a.tipo==='Segurança'?'st-EmAtendimento':a.tipo==='Login/Sessão'?'st-Agendado':'st-NaoCompareceu'}"><i></i>${a.tipo}</span><br><span class="mono small-xs">${esc(a.acao)}</span></td><td class="small">${esc(a.reg)}</td><td class="mono small-xs">${a.ip}</td></tr>`).join('')||'<tr><td colspan="5" class="text-center py-4 small">Sem eventos.</td></tr>';
+  const trash=DB.trash.filter(x=>x.tenantId===T().id);
+  $('trashTbody').innerHTML=trash.map(x=>`<tr><td><b>${esc(x.label)}</b></td><td>${x.tipo}</td><td class="mono small">${new Date(x.ts).toLocaleString('pt-BR')}</td><td class="small">${esc(x.by)}</td>
+    <td><button class="btn btn-p btn-sm-x" onclick="restore('${x.id}')">${ic('rest')} Restaurar</button></td></tr>`).join('')||'<tr><td colspan="5" class="text-center py-4 small" style="color:var(--ink-soft)">Lixeira vazia — exclusões ficam retidas aqui e podem ser restauradas.</td></tr>';
+}
+function restore(tid){if(!isAdmin()){denied();return}const x=DB.trash.find(t=>t.id===tid);
+  if(x.colecao==='agd')DB.agd.push(x.obj);if(x.colecao==='agri')DB.agri.push(x.obj);
+  DB.trash=DB.trash.filter(t=>t.id!==tid);audit('registro.restaurado',x.label,'Inclusão');save();toast('Registro restaurado',x.label+' voltou ao sistema.');renderAuditoria()}
+
+/* ------------------------- CONFIGURAÇÕES ------------------------- */
+function renderConfig(){const t=T();$('cfgNome').value=t.nome;$('cfgSigla').value=t.sigla;$('cfgLogoPrev').textContent=t.sigla;
+  $('cfgServ').innerHTML=SERVICES.map(s=>`<div class="form-check form-switch"><input class="form-check-input" type="checkbox" data-s="${esc(s)}" ${t.servicos.includes(s)?'checked':''} onchange="toggleServ(this)"><label class="form-check-label small">${s}</label></div>`).join('');
+  $('cfgNotifEmail').checked=t.notif.email;$('cfgNotifWhats').checked=t.notif.whats;$('cfgLembrete').value=t.notif.lembrete;
+  $('cfgSessao').value=String(Math.round(S.limit/60));
+  $('cfgBkLast').textContent='Não configurado · '+t.storage+' MB fictícios';
+  $('cfgBkList').innerHTML=t.backups.slice(0,3).map(b=>`<div class="d-flex justify-content-between small py-1 border-bottom" style="border-color:var(--line-soft)!important"><span>${ic('file')} exemplo-${esc(b.d)}</span><span class="mono small-xs" style="color:var(--g600)">${esc(b.t)} · ${esc(b.s)}</span></div>`).join('');
+}
+function saveCfgIdent(){const t=T();t.nome=$('cfgNome').value;t.sigla=$('cfgSigla').value.toUpperCase();audit('config.identidade','Tenant renomeado para '+t.nome,'Configuração');save();
+  setTenantChip('Prefeitura de '+t.nome,'TENANT '+t.id.toUpperCase()+' · SEC. DE AGRICULTURA');$('cfgLogoPrev').textContent=t.sigla;toast('Identidade salva','Dados do tenant atualizados.')}
+function toggleServ(cb){const t=T();const s=cb.dataset.s;t.servicos=cb.checked?[...new Set([...t.servicos,s])]:t.servicos.filter(x=>x!==s);audit('config.servicos',(cb.checked?'Habilitado: ':'Desabilitado: ')+s,'Configuração');save()}
+function saveCfgNotif(){const t=T();t.notif={email:$('cfgNotifEmail').checked,whats:$('cfgNotifWhats').checked,lembrete:$('cfgLembrete').value};
+  audit('config.notificacoes','Canais: '+(t.notif.email?'e-mail ':'')+(t.notif.whats?'+ WhatsApp':''),'Configuração');save();toast('Notificações salvas','Preferências de e-mail/WhatsApp aplicadas ao tenant.')}
+$('cfgSessao')&&document.addEventListener('change',e=>{if(e.target.id==='cfgSessao'){S.limit=parseInt(e.target.value)*60;S.last=Date.now();if(savePreference('siga_limit',e.target.value))toast('Sessão','Expiração por inatividade ajustada para '+e.target.value+' minutos.')}});
+function manualBackup(){const t=T();audit('backup.indisponivel','Tentativa de backup do tenant '+t.id,'Demonstração');toast('Backup não configurado','Este protótipo não criou nem enviou um backup de servidor.','err')}
+
+/* ------------------------- SUPER ADMIN ------------------------- */
+function renderMunicipios(){
+  const tot=DB.tenants.length,act=DB.tenants.filter(t=>t.ativo).length;
+  const munK=[['Municípios ativos',act+'/'+tot,'g600'],['Agricultores na plataforma',DB.agri.length.toLocaleString('pt-BR'),'amber'],['Atendimentos registrados',DB.agd.length.toLocaleString('pt-BR'),'blue'],['Armazenamento total',(DB.tenants.reduce((s,t)=>s+t.storage,0)/1024).toFixed(1)+' GB','clay']];
+  $('munKpis').innerHTML=munK.map(k=>`<div class="col-sm-6 col-xl-3"><div class="panel panel-b kpi"><div><div class="num" style="font-size:1.6rem">${k[1]}</div><div class="lbl">${k[0]}</div></div></div></div>`).join('');
+  $('munTbody').innerHTML=DB.tenants.map(t=>{
+    const uN=DB.users.filter(u=>u.tenantId===t.id).length,aN=DB.agri.filter(a=>a.tenantId===t.id).length;
+    const pct=Math.round(100*t.storage/t.storageMax);
+    return `<tr><td class="mono small">${t.id.toUpperCase()}</td>
+    <td><div class="d-flex align-items-center gap-2"><div class="avatar" style="width:30px;height:30px;font-size:.62rem;border-radius:8px">${t.sigla}</div><div><b>${esc(t.nome)}</b><br><span class="small-xs" style="color:var(--ink-soft)">Prefeitura Municipal · PA</span></div></div></td>
+    <td><span class="chip ${t.plano==='Estadual'?'role-super':t.plano==='Profissional'?'role-admin':'role-user'}"><i></i>${t.plano}</span></td>
+    <td>${uN}</td><td>${aN}</td>
+    <td class="storage"><div class="d-flex align-items-center gap-2"><div class="bar flex-grow-1"><i style="width:${pct}%"></i></div><span class="mono small-xs" style="color:var(--ink-soft)">${t.storage} MB</span></div></td>
+    <td>${t.ativo?'<span class="chip st-Confirmado"><i></i>Ativo</span>':'<span class="chip st-Cancelado"><i></i>Suspenso</span>'}</td>
+    <td><div class="d-flex gap-1"><button class="act-btn" title="${t.ativo?'Suspender':'Ativar'}" onclick="toggleTenant('${t.id}')">${ic(t.ativo?'x':'check')}</button></div></td></tr>`}).join('');
+}
+function toggleTenant(id){const t=DB.tenants.find(x=>x.id===id);t.ativo=!t.ativo;
+  DB.audit.unshift({id:uid(),tenantId:null,user:S.user.nome,acao:t.ativo?'tenant.ativado':'tenant.suspenso',reg:t.nome,ip:S.ip,ts:new Date().toISOString(),tipo:'Configuração'});save();
+  toast(t.ativo?'Município ativado':'Município suspenso',t.nome+(t.ativo?' voltou a operar normalmente.':' teve o acesso bloqueado para todos os usuários.'),t.ativo?'ok':'err');renderMunicipios()}
+function openTenantModal(){['tNome','tSigla','tEmail'].forEach(i=>$(i).value='');bootstrap.Modal.getOrCreateInstance($('mTenant')).show()}
+function saveTenant(){const nome=$('tNome').value.trim(),sigla=$('tSigla').value.trim().toUpperCase();
+  if(!nome||sigla.length<2){toast('Obrigatório','Informe município e sigla.','err');return}
+  const id='t'+pad(DB.tenants.length+1);
+  DB.tenants.push({id,nome,sigla,plano:$('tPlano').value,ativo:true,storage:2,storageMax:50*1024,criadoEm:hojeISO(),servicos:[...SERVICES],notif:{email:true,whats:false,lembrete:'24 horas antes'},backups:[]});
+  if($('tEmail').value)DB.users.push({id:uid(),tenantId:id,nome:'Administrador '+nome,email:$('tEmail').value.trim(),senha:'admin123',role:'admin',ativo:true,perms:{}});
+  DB.hist[id]=[{l:'Ago/26',v:0}];DB.audit.unshift({id:uid(),tenantId:null,user:S.user.nome,acao:'tenant.demonstracao',reg:nome+' ('+id.toUpperCase()+') — perfil local; sem banco ou convite real',ip:S.ip,ts:new Date().toISOString(),tipo:'Demonstração'});save();
+  bootstrap.Modal.getInstance($('mTenant')).hide();toast('Registro de demonstração',nome+' foi salvo neste navegador; banco e convite reais não foram criados.');renderMunicipios()}
+function renderPlanos(){
+  const plans=[['Essencial','R$ 290',['Até 3 usuários','500 agricultores','10 GB de armazenamento','Suporte por e-mail'],0],['Profissional','R$ 590',['Até 12 usuários','Agricultores ilimitados','50 GB de armazenamento','Notificações WhatsApp','Suporte prioritário'],1],['Estadual','R$ 1.190',['Usuários ilimitados','200 GB de armazenamento','API aberta / integrações','Backup 2× ao dia','Gerente de conta dedicado'],0]];
+  $('planRow').innerHTML=plans.map(p=>{const n=DB.tenants.filter(t=>t.plano===p[0]).length;
+    return `<div class="col-md-4"><div class="panel panel-b plan h-100 ${p[3]?'hot':''}">
+    ${p[3]?'<span class="flag position-absolute" style="top:14px;right:-28px;transform:rotate(38deg)">Mais contratado</span>':''}
+    <span class="kicker">${p[0]}</span><div class="p-val">${p[1]}<small style="font-size:.8rem;color:var(--ink-soft)">/mês</small></div>
+    <ul class="my-3">${p[2].map(f=>`<li>${ic('check')} ${f}</li>`).join('')}</ul>
+    <div class="d-flex justify-content-between align-items-center"><span class="chip st-Agendado"><i></i>${n} município(s)</span><button class="btn btn-ghost btn-sm-x">Gerenciar assinaturas</button></div></div></div>`}).join('');
+}
+function renderLogs(){$('logFt').innerHTML='<option value="">Município: todos</option>'+DB.tenants.map(t=>`<option value="${t.id}">${esc(t.nome)}</option>`).join('');
+  const f=$('logFt').value;
+  $('logTbody').innerHTML=DB.audit.filter(a=>!f||a.tenantId===f).slice(0,120).map(a=>`<tr><td class="mono small" style="white-space:nowrap">${new Date(a.ts).toLocaleString('pt-BR')}</td>
+    <td>${a.tenantId?esc(tName(a.tenantId)):'<span class="chip role-super"><i></i>Plataforma</span>'}</td><td class="small"><b>${esc(a.user)}</b></td>
+    <td><span class="mono small-xs">${esc(a.acao)}</span><br><span class="small" style="color:var(--ink-soft)">${esc(a.reg)}</span></td><td class="small">${esc(a.reg.length>40?'':a.reg)}</td><td class="mono small-xs">${a.ip}</td></tr>`).join('');}
+function renderInfra(){
+  $('infraKpis').innerHTML=[['Ambiente','Demonstração','g600'],['Banco de dados','Não conectado','blue'],['Autenticação','Simulada','amber'],['Serviços externos','Não configurados','clay']].map(k=>`<div class="d-flex justify-content-between align-items-center py-2 border-bottom" style="border-color:var(--line-soft)!important"><span class="small" style="color:var(--ink-soft)">${k[0]}</span><b class="df" style="color:var(--${k[2]})">${k[1]}</b></div>`).join('')+'<p class="small-xs mt-3 mb-0" style="color:var(--ink-soft)">Indicadores ilustrativos. SMTP, backups de servidor e limites de requisição ainda não estão configurados.</p>';
+  $('infraStorage').innerHTML=DB.tenants.map(t=>{const pct=Math.round(100*t.storage/t.storageMax);
+    return `<div class="storage mb-2"><div class="d-flex justify-content-between small"><span>${esc(t.nome)}</span><span class="mono small-xs" style="color:var(--ink-soft)">${t.storage} / ${t.storageMax} MB</span></div><div class="bar"><i style="width:${pct}%"></i></div></div>`}).join('');
+}
+function saveSmtp(){DB.audit.unshift({id:uid(),tenantId:null,user:S.user.nome,acao:'smtp.teste_indisponivel',reg:'Teste não executado no protótipo',ip:S.ip,ts:new Date().toISOString(),tipo:'Demonstração'});save();toast('SMTP não configurado','Este protótipo não testou uma conexão nem enviou e-mail.','err')}
+
+/* ------------------------- BUSCA GLOBAL / NOTIF / TEMA / SESSÃO ------------------------- */
+$('gSearch').addEventListener('input',()=>{const q=$('gSearch').value.trim().toLowerCase();const box=$('gResults');
+  if(q.length<2){box.classList.remove('on');return}
+  const t=T();const r1=DB.agri.filter(a=>a.tenantId===t.id&&a.nome.toLowerCase().includes(q)).slice(0,4).map(a=>`<div class="ri" onclick="openAgriDrawer('${a.id}');hideSearch()">${ic('leaf')}<div><b>${esc(a.nome)}</b><br><span class="small-xs" style="color:var(--ink-soft)">Agricultor · ${esc(a.comunidade)}</span></div></div>`);
+  const r2=DB.agd.filter(a=>a.tenantId===t.id&&(a.num.toLowerCase().includes(q)||a.agriNome.toLowerCase().includes(q))).slice(0,4).map(a=>`<div class="ri" onclick="viewAgd('${a.id}');hideSearch()">${ic('ticket')}<div><b>${a.num}</b> · ${esc(a.servico)}<br><span class="small-xs" style="color:var(--ink-soft)">${fmtBR(a.data)} ${a.hora} · ${chipSt(a.status)}</span></div></div>`);
+  box.innerHTML=(r1.concat(r2)).join('')||'<div class="ri" style="color:var(--ink-soft)">Nenhum resultado neste tenant.</div>';box.classList.add('on')});
+function hideSearch(){$('gResults').classList.remove('on');$('gSearch').value=''}
+document.addEventListener('click',e=>{if(!e.target.closest('.gsearch'))$('gResults').classList.remove('on')});
+function buildBell(){const list=DB.notifs.filter(n=>S.user.role==='super'||n.tenantId===S.user.tenantId);
+  const un=list.filter(n=>!n.read).length;$('bellBadge').style.display=un?'grid':'none';$('bellBadge').textContent=un;
+  $('bellList').innerHTML=`<div class="d-flex justify-content-between px-3 py-2 border-bottom" style="border-color:var(--line-soft)!important"><b class="small">Notificações</b><button class="btn btn-link btn-sm-x p-0 text-decoration-none" onclick="markRead()">Marcar lidas</button></div>`+
+  list.slice(0,6).map(n=>`<div class="notif-it ${n.read?'':'unread'}"><b>${ic('bell')} ${esc(n.titulo)}</b><p>${esc(n.corpo)}</p><span class="mono small-xs" style="color:var(--ink-soft)">${new Date(n.ts).toLocaleString('pt-BR')}</span></div>`).join('')||'<div class="notif-it">Sem notificações.</div>'}
+function markRead(){DB.notifs.forEach(n=>{if(S.user.role==='super'||n.tenantId===S.user.tenantId)n.read=true});save();buildBell()}
+function toggleTheme(){const h=document.documentElement;const d=h.dataset.theme==='dark';h.dataset.theme=d?'light':'dark';
+  $('themeIco').innerHTML=`<use href="#i-${d?'moon':'sun'}"/>`;savePreference('siga_theme',d?'light':'dark');
+  if(document.querySelector('#view-dashboard').style.display!=='none')renderDashboard()}
+function startSession(){clearInterval(S._t);S.last=Date.now();S._t=setInterval(()=>{if(!S.user)return;
+  const rem=Math.max(0,S.limit-Math.floor((Date.now()-S.last)/1000));
+  $('sessTime').textContent=pad(Math.floor(rem/60))+':'+pad(rem%60);
+  if(rem<=0)doLogout('Sessão expirada por inatividade. Autentique-se novamente.')},1000)}
+['click','keydown','touchstart'].forEach(ev=>document.addEventListener(ev,()=>{if(S.user)S.last=Date.now()},{passive:true}));
+
+/* ------------------------- BOOT ------------------------- */
+function boot(){
+  try{
+    if(!load())seed();
+    if(STORAGE_WRITE_FAILED){
+      const err=$('gErr');err.textContent='O navegador não conseguiu salvar os dados da demonstração. As alterações desta sessão podem ser perdidas.';err.className='alert alert-warning py-2 small';err.style.display='block';
+    }
+  }
+  catch(error){
+    console.error('Não foi possível carregar os dados locais de demonstração.',error);
+    const err=$('gErr');err.textContent='Não foi possível ler os dados locais (armazenamento bloqueado ou conteúdo inválido). Nada foi apagado; verifique o armazenamento do navegador antes de continuar.';err.style.display='block';
+    $('gForm').querySelector('button[type="submit"]').disabled=true;
+    return;
+  }
+  const th=localStorage.getItem('siga_theme');if(th==='dark'){document.documentElement.dataset.theme='dark';$('themeIco').innerHTML='<use href="#i-sun"/>'}
+  const names=DB.tenants.map(t=>t.nome.toUpperCase());
+  $('tickTrack').innerHTML=[...names,...names,...names].map(n=>`<span>${n} ✦</span>`).join('');
+  $('gateStats').innerHTML=`<span><b>${DB.tenants.filter(t=>t.ativo).length}</b>municípios ativos</span><span><b>${DB.agri.length}</b>agricultores</span><span><b>${DB.agd.length}</b>atendimentos</span><span><b>${DB.tec.length}</b>técnicos</span>`;
+  // PWA manifest dinâmico
+  try{const ico='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192"><rect width="192" height="192" rx="40" fill="#0c2016"/><path d="M96 140V82" stroke="#e9e6d9" stroke-width="10" stroke-linecap="round"/><path d="M96 100c-4-24-24-36-48-36 4 24 24 36 48 36z" fill="#2f9159"/><path d="M96 84c4-22 22-32 44-32-4 22-22 32-44 32z" fill="#43ab6c"/><path d="M52 150h88" stroke="#d9931f" stroke-width="10" stroke-linecap="round"/></svg>');
+    const m={name:'SIGA Pará — Gestão Agrícola',short_name:'SIGA Pará',start_url:'.',display:'standalone',background_color:'#0c2016',theme_color:'#0c2016',icons:[{src:ico,sizes:'192x192',type:'image/svg+xml'},{src:ico,sizes:'512x512',type:'image/svg+xml'}]};
+    const l=document.createElement('link');l.rel='manifest';l.href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/json'}));document.head.appendChild(l)}catch(e){}
+}
+boot();
+</script>
+</body>
+</html>
